@@ -1,0 +1,288 @@
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import {
+  and,
+  between,
+  eq,
+  gte,
+  ilike,
+  isNotNull,
+  lte,
+  or,
+  type SQL,
+  sql,
+} from "drizzle-orm";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
+
+// Configurar plugins do dayjs
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
+import { db } from "@/db";
+import { patientsTable, sellersTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+
+import GenerateLinkButton from "../../_components/generate-link-button";
+import AddPatientButton from "./_components/add-patient-button";
+import FiltersBar from "./_components/filters-bar";
+import PatientsTable from "./_components/patients-table";
+import SearchPatients from "./_components/search-patients";
+
+interface PatientsGestorPageProps {
+  searchParams: Promise<{
+    search?: string;
+    filter?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }>;
+}
+
+const PatientsGestorPage = async ({
+  searchParams,
+}: PatientsGestorPageProps) => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+
+  if (session.user.role !== "gestor") {
+    if (session.user.role === "admin") {
+      redirect("/dashboard");
+    } else {
+      redirect("/vendedor/patients-seller");
+    }
+  }
+
+  // Aguardar searchParams antes de usar
+  const { search, filter, dateFrom, dateTo } = await searchParams;
+  const isShowingExpired = filter === "expired";
+
+  // Buscar o gestor na tabela de vendedores para obter a clínica
+  const gestor = await db.query.sellersTable.findFirst({
+    where: eq(sellersTable.email, session.user.email),
+    with: {
+      clinic: true,
+    },
+  });
+
+  if (!gestor || !gestor.clinic || !gestor.clinicId) {
+    redirect("/authentication");
+  }
+
+  // Construir as condições de busca - filtrar por clínica do gestor
+  const searchTerm = search?.trim();
+
+  let whereCondition: SQL<unknown> | undefined;
+
+  // Aplicar filtro de vencidos se necessário
+  if (isShowingExpired) {
+    whereCondition = and(
+      //eq(patientsTable.clinicId, gestor.clinicId),
+      isNotNull(patientsTable.expirationDate),
+      lte(patientsTable.expirationDate, new Date()),
+    )!;
+  }
+
+  // Aplicar filtro por período de data de vencimento
+  // Interpreta as datas como horário de São Paulo e converte para UTC
+  // O DatePicker já envia as datas com horas (formato: YYYY-MM-DD HH:mm:ss)
+  if (dateFrom && dateTo) {
+    const fromDate = dayjs.tz(dateFrom, "America/Sao_Paulo").utc().toDate();
+    const toDate = dayjs.tz(dateTo, "America/Sao_Paulo").utc().toDate();
+
+    const dateCondition = and(
+      isNotNull(patientsTable.expirationDate),
+      between(patientsTable.expirationDate, fromDate, toDate),
+    )!;
+
+    whereCondition = whereCondition
+      ? and(whereCondition, dateCondition)!
+      : dateCondition;
+  } else if (dateFrom) {
+    const fromDate = dayjs.tz(dateFrom, "America/Sao_Paulo").utc().toDate();
+    const dateCondition = and(
+      isNotNull(patientsTable.expirationDate),
+      gte(patientsTable.expirationDate, fromDate),
+    )!;
+
+    whereCondition = whereCondition
+      ? and(whereCondition, dateCondition)!
+      : dateCondition;
+  } else if (dateTo) {
+    const toDate = dayjs.tz(dateTo, "America/Sao_Paulo").utc().toDate();
+    const dateCondition = and(
+      isNotNull(patientsTable.expirationDate),
+      lte(patientsTable.expirationDate, toDate),
+    )!;
+
+    whereCondition = whereCondition
+      ? and(whereCondition, dateCondition)!
+      : dateCondition;
+  }
+
+  // Aplicar filtro de busca por texto
+  if (searchTerm) {
+    // Normalizar termo de busca removendo acentos e espaços extras
+    const normalizedSearchTerm = searchTerm
+      .trim()
+      .replace(/\s+/g, " ") // Normalizar espaços múltiplos para um único espaço
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+
+    // Também criar versão com espaços normalizados mas com acentos
+    const spacesNormalizedTerm = searchTerm.trim().replace(/\s+/g, " ");
+
+    const searchConditions = or(
+      // Busca normal (com acentos)
+      ilike(patientsTable.name, `%${searchTerm}%`),
+      ilike(patientsTable.cpfNumber, `%${searchTerm}%`),
+      ilike(patientsTable.rgNumber, `%${searchTerm}%`),
+      ilike(patientsTable.phoneNumber, `%${searchTerm}%`),
+      ilike(patientsTable.city, `%${searchTerm}%`),
+      // Busca com espaços normalizados
+      ilike(patientsTable.name, `%${spacesNormalizedTerm}%`),
+      ilike(patientsTable.city, `%${spacesNormalizedTerm}%`),
+      // Busca sem acentos usando translate (compatível com PostgreSQL)
+      sql`lower(translate(regexp_replace(${patientsTable.name}, '\\s+', ' ', 'g'), 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ', 'AAAAAAaaaaaaOOOOOOooooooEEEEeeeeeCcIIIIiiiiUUUUuuuuyNn')) ilike '%' || lower(${normalizedSearchTerm}) || '%'`,
+      sql`lower(translate(regexp_replace(${patientsTable.city}, '\\s+', ' ', 'g'), 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ', 'AAAAAAaaaaaaOOOOOOooooooEEEEeeeeeCcIIIIiiiiUUUUuuuuyNn')) ilike '%' || lower(${normalizedSearchTerm}) || '%'`,
+    )!;
+
+    whereCondition = whereCondition
+      ? and(whereCondition, searchConditions)!
+      : searchConditions;
+  }
+
+  // Buscar todos os pacientes
+  const allPatients = await db.query.patientsTable.findMany({
+    where: whereCondition,
+    with: {
+      seller: true,
+      clinic: true,
+    },
+    orderBy: (patients, { desc }) => [
+      isShowingExpired ? desc(patients.activeAt) : desc(patients.updatedAt),
+    ],
+  });
+
+  // Separar por clínica: clínica do gestor primeiro, depois outras
+  const gestorClinicPatients = allPatients.filter(
+    (patient) => patient.clinicId === gestor.clinicId,
+  );
+  const otherClinicsPatients = allPatients.filter(
+    (patient) => patient.clinicId !== gestor.clinicId,
+  );
+
+  // Função para ordenar pacientes vencidos (activeAt nulo primeiro)
+  const sortExpiredPatients = (patients: typeof allPatients) => {
+    if (!isShowingExpired) return patients;
+
+    return patients.sort((a, b) => {
+      // Se um tem activeAt nulo e outro não, nulo vem primeiro
+      if (!a.activeAt && b.activeAt) return -1;
+      if (a.activeAt && !b.activeAt) return 1;
+
+      // Se ambos são nulos ou ambos têm valor, ordenar por updatedAt desc
+      if (!a.activeAt && !b.activeAt) {
+        return (
+          new Date(b.updatedAt || 0).getTime() -
+          new Date(a.updatedAt || 0).getTime()
+        );
+      }
+
+      // Se ambos têm activeAt, ordenar por activeAt desc
+      return (
+        new Date(b.activeAt || 0).getTime() -
+        new Date(a.activeAt || 0).getTime()
+      );
+    });
+  };
+
+  // Aplicar ordenação especial para vencidos e combinar
+  const sortedGestorPatients = sortExpiredPatients(gestorClinicPatients);
+  const sortedOtherPatients = sortExpiredPatients(otherClinicsPatients);
+
+  // Combinar: clínica do gestor primeiro, depois outras
+  const patients = [...sortedGestorPatients, ...sortedOtherPatients];
+
+  return (
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>
+            {isShowingExpired ? "Convênios Vencidos" : "Convênios "}
+          </PageTitle>
+          <PageDescription>
+            {isShowingExpired
+              ? "Convênios com data de expiração vencida ou pendentes."
+              : `Gerencie os convênios.`}
+          </PageDescription>
+        </PageHeaderContent>
+        <PageActions>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-2">
+              <GenerateLinkButton
+                sellerId={gestor.id}
+                sellerName={gestor.name}
+              />
+              <Suspense fallback={<div>Carregando...</div>}>
+                <FiltersBar />
+              </Suspense>
+              <AddPatientButton
+                sellerId={gestor.id}
+                clinicId={gestor.clinicId!}
+              />
+            </div>
+          </div>
+        </PageActions>
+      </PageHeader>
+      <PageContent>
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Suspense fallback={<div>Carregando...</div>}>
+              <SearchPatients />
+            </Suspense>
+          </div>
+
+          <div className="w-full">
+            <PatientsTable
+              patients={patients.map((patient) => ({
+                ...patient,
+                birthDate: patient.birthDate
+                  ? new Date(patient.birthDate)
+                  : null,
+              }))}
+              gestorClinicId={gestor.clinicId!}
+            />
+          </div>
+        </div>
+      </PageContent>
+    </PageContainer>
+  );
+};
+
+// Wrapper para suporte ao Suspense com searchParams
+const PatientsGestorPageWrapper = (props: PatientsGestorPageProps) => {
+  return (
+    <Suspense fallback={<div>Carregando pacientes...</div>}>
+      <PatientsGestorPage {...props} />
+    </Suspense>
+  );
+};
+
+export default PatientsGestorPageWrapper;
