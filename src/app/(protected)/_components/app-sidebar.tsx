@@ -159,11 +159,11 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b p-3">
         <Image
-          src="/logo.svg"
-          alt="Mais Saude Lasac Logo"
+          src="/logo.png"
+          alt="guadalupe Saúde Logo"
           width={200}
           height={150}
-          className="h-aut0 w-full object-contain"
+          className="h-auto w-full object-contain"
         />
       </SidebarHeader>
       <SidebarContent>

@@ -13,9 +13,52 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Mais Saúde Lasac",
-  description: "Sistema de Gestão de convênios Mais Saúde Lasac",
-  keywords: ["Mais Saúde Lasac", "convênios", "gestão", "sistema"],
+  title: "Guadalupe Saúde",
+  description: "Sistema de Gestão de convênios Guadalupe Saúde",
+  keywords: [
+    // Marca
+    "Guadalupe Saúde",
+    "Sistema Guadalupe Saúde",
+    "Plataforma Guadalupe Saúde",
+
+    // Intenção principal (gestão / clínica / convênios)
+    "gestão de convênios",
+    "gestão de clínica",
+    "sistema para clínica",
+    "software para clínica",
+    "sistema de gestão de saúde",
+    "sistema de gestão clínica",
+    "gestão de pacientes",
+    "cadastro de pacientes",
+    "agendamento de consultas",
+    "prontuário eletrônico",
+    "faturamento médico",
+    "contas médicas",
+    "auditoria de convênios",
+
+    // Operação / processos (o que seu sistema faz)
+    "autorizações",
+    "guias TISS",
+    "TISS",
+    "glosas",
+    "recursos de glosa",
+    "controle de atendimentos",
+    "controle de procedimentos",
+    "controle de exames",
+    "controle de repasses",
+    "relatórios de convênios",
+    "painel de indicadores",
+    "dashboards de saúde",
+
+    // Termos populares no Brasil
+    "gestão hospitalar",
+    "gestão de clínica e consultório",
+    "sistema para consultório",
+    "software de consultório",
+    "gestão de receitas e despesas clínica",
+    "financeiro da clínica",
+    "controle de agenda médica",
+  ],
 };
 
 export default function RootLayout({

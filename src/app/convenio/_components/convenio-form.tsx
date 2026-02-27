@@ -12,6 +12,7 @@ import { z } from "zod";
 
 import { createPatient } from "@/actions/create-patient";
 import { createPatientSchema } from "@/actions/create-patient/schema";
+import { createStripeCheckout } from "@/actions/create-stripe-checkout";
 import ContratoDialog from "@/app/contrato/_components/contrato-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,7 +131,23 @@ export function ConvenioForm() {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loadingClinics, setLoadingClinics] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const createStripeCheckoutAction = useAction(createStripeCheckout, {
+    onSuccess: (result) => {
+      const url = result.data?.url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        toast.error("Não foi possível abrir a página de pagamento.");
+      }
+    },
+    onError: (error) => {
+      toast.error(error.error.serverError || "Erro ao realizar pagamento");
+    },
+  });
 
+  const handlePaymentStripeClick = async () => {
+    await createStripeCheckoutAction.execute();
+  };
   // ID padrão da URL
   const defaultClinicId = searchParams.get("clinicId") || "";
 
@@ -808,7 +825,7 @@ export function ConvenioForm() {
                             <FormLabel className="mt-2 mb-2 text-sm font-medium text-emerald-950">
                               Autorizo o recebimento de mensagens via WhatsApp
                               sobre avisos, lembretes e comunicações sobre o meu
-                              cartão LASAC.
+                              cartão Guadalupe Saúde.
                             </FormLabel>
                             <FormMessage />
                           </div>
@@ -857,12 +874,20 @@ export function ConvenioForm() {
 
                 <Button
                   type="button"
-                  onClick={() => setShowPaymentDialog(true)}
+                  onClick={() => handlePaymentStripeClick()}
+                  disabled={createStripeCheckoutAction.isExecuting}
                   variant="outline"
                   className="w-full sm:w-auto"
                   size="lg"
                 >
-                  💳 Informações de Pagamento
+                  {createStripeCheckoutAction.isExecuting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                      Redirecionando...
+                    </>
+                  ) : (
+                    "💳 Informações de Pagamento"
+                  )}
                 </Button>
               </div>
             </form>

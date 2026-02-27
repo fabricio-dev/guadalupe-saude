@@ -81,7 +81,7 @@ export default function ConvenioPage() {
                   className="h-8 w-auto object-contain"
                 />
                 <h1 className="text-xl font-bold text-emerald-900">
-                  Mais Saúde Lasac
+                  Guadalupe Saúde
                 </h1>
               </div>
             </div>
