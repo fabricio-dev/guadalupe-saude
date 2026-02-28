@@ -98,6 +98,18 @@ export const statusAgreementEnum = pgEnum("status_agreement", [
   "expired", //contrato expirado
   "pending", //pendente de assinatura para cliente que se auto cadastrar
 ]);
+export const paymentTypeEnum = pgEnum("payment_type", [
+  "PIX",
+  "CARD",
+  "DINHEIRO",
+]);
+export const paymentStatusEnum = pgEnum("payment_status", [
+  "PENDING",
+  "PROOF_SUBMITTED",
+  "PAID",
+  "FAILED",
+  "CANCELED",
+]);
 
 export const patientsTable = pgTable("patients", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -134,6 +146,12 @@ export const patientsTable = pgTable("patients", {
   activeAt: timestamp("active_at"),
   reactivatedAt: timestamp("reactivated_at"),
   whatsappConsent: boolean("whatsapp_consent").notNull().default(true),
+  paymentType: paymentTypeEnum("payment_type"),
+  paymentStatus: paymentStatusEnum("payment_status").default("PENDING"),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  pixProofNote: text("pix_proof_note"),
+  paidAt: timestamp("paid_at"),
 });
 
 export const notificationTypeEnum = pgEnum("notification_type", [

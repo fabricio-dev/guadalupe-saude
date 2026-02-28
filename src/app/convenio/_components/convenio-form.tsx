@@ -145,9 +145,6 @@ export function ConvenioForm() {
     },
   });
 
-  const handlePaymentStripeClick = async () => {
-    await createStripeCheckoutAction.execute();
-  };
   // ID padrão da URL
   const defaultClinicId = searchParams.get("clinicId") || "";
 
@@ -177,21 +174,34 @@ export function ConvenioForm() {
       dependents6: "",
       acceptTerms: false,
       whatsappConsent: true,
+      paymentType: "PIX",
     },
   });
 
   const createPatientAction = useAction(createPatient, {
-    onSuccess: () => {
-      console.log("Sucesso! Mostrando dialog...");
-      setShowPaymentDialog(true);
+    onSuccess: async ({ data }) => {
       toast.success("Solicitação de convênio enviada com sucesso!");
-      // Reset do form após um pequeno delay para evitar conflitos
+
+      const paymentType = form.getValues("paymentType");
+
+      if (!data?.patientId) {
+        toast.error("Não foi possível identificar o convênio criado.");
+        return;
+      }
+
+      if (paymentType === "CARD") {
+        await createStripeCheckoutAction.execute({ patientId: data.patientId });
+        return; // vai redirecionar
+      }
+
+      // PIX
+      setShowPaymentDialog(true);
+
       setTimeout(() => {
         form.reset();
       }, 100);
     },
     onError: (error) => {
-      console.log("Erro:", error);
       toast.error(error.error.serverError || "Erro ao enviar solicitação");
     },
   });
@@ -284,7 +294,7 @@ export function ConvenioForm() {
 
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle className="text-center text-emerald-950">
+          <CardTitle className="text-center text-xl font-bold text-sky-700">
             Formulário de Solicitação
           </CardTitle>
         </CardHeader>
@@ -293,7 +303,7 @@ export function ConvenioForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Dados Pessoais */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-emerald-900">
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
                   Dados Pessoais
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -302,7 +312,7 @@ export function ConvenioForm() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Nome Titular
                         </FormLabel>
                         <FormControl>
@@ -321,7 +331,7 @@ export function ConvenioForm() {
                     name="birthDate"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Data de Nascimento
                         </FormLabel>
                         <FormControl>
@@ -337,9 +347,7 @@ export function ConvenioForm() {
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
-                          Telefone
-                        </FormLabel>
+                        <FormLabel className="text-sky-700">Telefone</FormLabel>
                         <FormControl>
                           <PatternFormat
                             format="(##) #####-####"
@@ -362,7 +370,7 @@ export function ConvenioForm() {
                     name="rgNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">RG</FormLabel>
+                        <FormLabel className="text-sky-700">RG</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Digite apenas números"
@@ -383,7 +391,7 @@ export function ConvenioForm() {
                     name="cpfNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           CPF{" "}
                           {checkingCPF && (
                             <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -430,7 +438,7 @@ export function ConvenioForm() {
 
               {/* Endereço */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-emerald-900">
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
                   Endereço
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -439,9 +447,7 @@ export function ConvenioForm() {
                     name="address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
-                          Endereço
-                        </FormLabel>
+                        <FormLabel className="text-sky-700">Endereço</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Rua, Avenida, número"
@@ -458,9 +464,7 @@ export function ConvenioForm() {
                     name="homeNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
-                          Bairro
-                        </FormLabel>
+                        <FormLabel className="text-sky-700">Bairro</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Digite o nome do bairro"
@@ -477,9 +481,7 @@ export function ConvenioForm() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
-                          Cidade
-                        </FormLabel>
+                        <FormLabel className="text-sky-700">Cidade</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Digite o nome da cidade"
@@ -496,7 +498,7 @@ export function ConvenioForm() {
                     name="state"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">UF</FormLabel>
+                        <FormLabel className="text-sky-700">UF</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -523,7 +525,7 @@ export function ConvenioForm() {
 
               {/* Informações do Convênio */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-emerald-900">
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
                   Informações do Convênio
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -532,7 +534,7 @@ export function ConvenioForm() {
                     name="clinicId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Unidade{" "}
                           {loadingClinics && (
                             <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -566,7 +568,7 @@ export function ConvenioForm() {
                     name="cardType"
                     render={({ field }) => (
                       <FormItem hidden={true}>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Tipo de Cartão
                         </FormLabel>
                         <Select
@@ -593,9 +595,7 @@ export function ConvenioForm() {
                     name="Enterprise"
                     render={({ field }) => (
                       <FormItem hidden={true}>
-                        <FormLabel className="text-emerald-950">
-                          Empresa
-                        </FormLabel>
+                        <FormLabel className="text-sky-700">Empresa</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Nome da empresa"
@@ -613,7 +613,7 @@ export function ConvenioForm() {
                     name="numberCards"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Quantidade de Cartões
                         </FormLabel>
                         <FormControl>
@@ -634,7 +634,7 @@ export function ConvenioForm() {
 
               {/* Dependentes */}
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-emerald-900">
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
                   Dependentes (Opcional)
                 </h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -643,7 +643,7 @@ export function ConvenioForm() {
                     name="dependents1"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 1
                         </FormLabel>
                         <FormControl>
@@ -662,7 +662,7 @@ export function ConvenioForm() {
                     name="dependents2"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 2
                         </FormLabel>
                         <FormControl>
@@ -681,7 +681,7 @@ export function ConvenioForm() {
                     name="dependents3"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 3
                         </FormLabel>
                         <FormControl>
@@ -700,7 +700,7 @@ export function ConvenioForm() {
                     name="dependents4"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 4
                         </FormLabel>
                         <FormControl>
@@ -719,7 +719,7 @@ export function ConvenioForm() {
                     name="dependents5"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 5
                         </FormLabel>
                         <FormControl>
@@ -738,7 +738,7 @@ export function ConvenioForm() {
                     name="dependents6"
                     render={({ field }) => (
                       <FormItem hidden={true}>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Dependente 6
                         </FormLabel>
                         <FormControl>
@@ -756,7 +756,7 @@ export function ConvenioForm() {
                     name="observation"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-emerald-950">
+                        <FormLabel className="text-sky-700">
                           Observações
                         </FormLabel>
                         <FormControl>
@@ -771,17 +771,49 @@ export function ConvenioForm() {
                   />
                 </div>
               </div>
+              <div>
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
+                  Forma de Pagamento
+                </h3>
+
+                <FormField
+                  control={form.control}
+                  name="paymentType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-emerald-950">
+                        Escolha como pagar
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="PIX">PIX (QR Code)</SelectItem>
+                          <SelectItem value="CARD">Cartão (Crédito)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Termos e Condições */}
 
               <div>
-                <h3 className="mb-4 text-lg font-semibold text-emerald-900">
+                <h3 className="mb-4 text-lg font-semibold text-sky-700">
                   Termos e Condições
                 </h3>
 
                 <div className="space-y-4">
-                  <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="mb-3 text-sm text-emerald-800">
+                  <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
+                    <p className="mb-3 text-sm text-sky-800">
                       Para prosseguir com sua solicitação de convênio, é
                       necessário aceitar nossos termos de uso e política de
                       privacidade.
@@ -818,11 +850,11 @@ export function ConvenioForm() {
                               type="checkbox"
                               checked={field.value}
                               onChange={field.onChange}
-                              className="mt-2 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                              className="mt-2 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-500"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel className="mt-2 mb-2 text-sm font-medium text-emerald-950">
+                            <FormLabel className="mt-2 mb-2 text-sm font-medium text-sky-700">
                               Autorizo o recebimento de mensagens via WhatsApp
                               sobre avisos, lembretes e comunicações sobre o meu
                               cartão Guadalupe Saúde.
@@ -842,11 +874,11 @@ export function ConvenioForm() {
                               type="checkbox"
                               checked={field.value}
                               onChange={field.onChange}
-                              className="mt-0.5 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                              className="mt-0.5 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-500"
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel className="text-sm font-medium text-emerald-950">
+                            <FormLabel className="text-sm font-medium text-sky-700">
                               Li e aceito os termos de uso e política de
                               privacidade
                             </FormLabel>
@@ -864,30 +896,12 @@ export function ConvenioForm() {
                 <Button
                   type="submit"
                   disabled={createPatientAction.isExecuting}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 sm:max-w-md"
+                  className="w-full bg-sky-700/80 hover:bg-sky-700 sm:max-w-md"
                   size="lg"
                 >
                   {createPatientAction.isExecuting
                     ? "Enviando..."
                     : "Solicitar Convênio"}
-                </Button>
-
-                <Button
-                  type="button"
-                  onClick={() => handlePaymentStripeClick()}
-                  disabled={createStripeCheckoutAction.isExecuting}
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  size="lg"
-                >
-                  {createStripeCheckoutAction.isExecuting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                      Redirecionando...
-                    </>
-                  ) : (
-                    "💳 Informações de Pagamento"
-                  )}
                 </Button>
               </div>
             </form>

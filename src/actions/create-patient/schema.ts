@@ -73,6 +73,11 @@ export const createPatientSchema = z
     dependents4: z.string().optional(),
     dependents5: z.string().optional(),
     dependents6: z.string().optional(),
+
+    paymentType: z.enum(["PIX", "CARD"], {
+      message: "Selecione a forma de pagamento",
+    }),
+
     acceptTerms: z.boolean().refine((value) => value === true, {
       message: "Você deve aceitar os termos de uso e política de privacidade",
     }),

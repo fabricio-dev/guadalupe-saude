@@ -34,9 +34,9 @@ export const createPatient = actionClient
       dependents5,
       dependents6,
       whatsappConsent,
+      paymentType,
     } = parsedInput;
 
-    // Verificar se CPF já existe (apenas se CPF foi fornecido)
     let cleanCPF = null;
     if (cpfNumber && cpfNumber.trim() !== "") {
       cleanCPF = cpfNumber.replace(/\D/g, "");
@@ -51,39 +51,53 @@ export const createPatient = actionClient
       }
     }
 
-    // Criar paciente sem vendedor e clínica (será atribuído posteriormente)
-    await db.insert(patientsTable).values({
-      name,
-      birthDate: birthDate
-        ? dayjs(birthDate).startOf("day").toISOString()
-        : null,
-      phoneNumber,
-      rgNumber: rgNumber || null,
-      cpfNumber: cleanCPF,
-      address: address || null,
-      homeNumber: homeNumber || null,
-      city: city || null,
-      state: state || null,
-      cardType,
-      Enterprise: Enterprise || null,
-      numberCards: numberCards ? parseInt(numberCards) : null,
-      sellerId: parsedInput.sellerId,
-      clinicId: parsedInput.clinicId,
-      observation: observation || null,
-      dependents1: dependents1 || null,
-      dependents2: dependents2 || null,
-      dependents3: dependents3 || null,
-      dependents4: dependents4 || null,
-      dependents5: dependents5 || null,
-      dependents6: dependents6 || null,
-      whatsappConsent: whatsappConsent ?? false,
-      isActive: false, // Inativo até ser processado
-      expirationDate: dayjs()
-        .subtract(1, "day")
-        .startOf("day")
-        .add(6, "hours")
-        .toDate(), // Será definido posteriormente
-    });
+    const [created] = await db
+      .insert(patientsTable)
+      .values({
+        name,
+        birthDate: birthDate
+          ? dayjs(birthDate).startOf("day").toISOString()
+          : null,
+        phoneNumber,
+        rgNumber: rgNumber || null,
+        cpfNumber: cleanCPF,
+        address: address || null,
+        homeNumber: homeNumber || null,
+        city: city || null,
+        state: state || null,
+        cardType,
+        Enterprise: Enterprise || null,
+        numberCards: numberCards ? parseInt(numberCards) : null,
+        sellerId: parsedInput.sellerId,
+        clinicId: parsedInput.clinicId,
+        observation: observation || null,
+        dependents1: dependents1 || null,
+        dependents2: dependents2 || null,
+        dependents3: dependents3 || null,
+        dependents4: dependents4 || null,
+        dependents5: dependents5 || null,
+        dependents6: dependents6 || null,
+        whatsappConsent: whatsappConsent ?? false,
+
+        // sua lógica atual
+        isActive: false,
+        expirationDate: dayjs()
+          .subtract(1, "day")
+          .startOf("day")
+          .add(6, "hours")
+          .toDate(),
+
+        // novos campos
+        paymentType,
+        paymentStatus: "PENDING",
+        paidAt: null,
+        stripeCheckoutSessionId: null,
+        stripePaymentIntentId: null,
+        pixProofNote: null,
+      })
+      .returning({ id: patientsTable.id });
 
     revalidatePath("/");
+
+    return { patientId: created.id };
   });
