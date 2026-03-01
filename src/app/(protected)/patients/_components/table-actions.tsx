@@ -1,7 +1,9 @@
 "use client";
 
+import dayjs from "dayjs";
 import {
   CheckCircle,
+  CreditCardIcon,
   Edit2,
   MoreHorizontal,
   PrinterIcon,
@@ -37,6 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import PrintCardComponent from "../../_components/print-card-component";
+import { RenewalLinkDialog } from "./renewal-link-dialog";
 import UpsertPatientForm from "./upsert-patient-form";
 
 interface Patient {
@@ -151,6 +154,7 @@ export default function TableActions({
                   />
                 </div>
               </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => onPrintContract(patient)}
                 className="cursor-pointer"
@@ -160,7 +164,18 @@ export default function TableActions({
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-
+          <RenewalLinkDialog
+            patientId={patient.id}
+            isAllowed={isExpired || isPending}
+            trigger={
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="cursor-pointer"
+              >
+                <CreditCardIcon className="mr-2 h-4 w-4" /> Link de pagamento
+              </DropdownMenuItem>
+            }
+          />
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <DropdownMenuItem

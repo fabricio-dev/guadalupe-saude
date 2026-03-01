@@ -111,6 +111,7 @@ export async function POST(req: Request) {
             .where(
               and(
                 eq(patientsTable.id, patientId),
+                eq(patientsTable.stripeCheckoutSessionId, session.id),
                 ne(patientsTable.paymentStatus, "PAID"),
               ),
             );
