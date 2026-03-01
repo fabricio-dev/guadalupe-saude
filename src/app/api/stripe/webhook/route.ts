@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { and, eq, isNull, ne } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -76,20 +76,57 @@ export async function POST(req: Request) {
 
         // Idempotência simples: só ativa se ainda não está PAID
         // e também confirma que a Session bate com o registro (se você salvou session.id)
+
+        // Determinar se é primeira ativação ou renovacao de convenio
+        const patient = await db.query.patientsTable.findFirst({
+          where: eq(patientsTable.id, patientId),
+        });
+        if (!patient) {
+          throw new Error("Paciente não encontrado");
+        }
+        if (patient.paymentStatus === "PAID" && patient.isActive === true) {
+          return NextResponse.json(
+            { error: "Paciente já está ativo" },
+            { status: 400 },
+          );
+        }
+
+        const updateData: Partial<typeof patientsTable.$inferInsert> =
+          //primeira ativação
+          patient?.activeAt === null
+            ? {
+                paymentStatus: "PAID",
+                paidAt,
+                isActive: true,
+                activeAt: paidAt,
+                expirationDate: newExpirationDate,
+                stripeCheckoutSessionId: session.id,
+                stripePaymentIntentId:
+                  typeof session.payment_intent === "string"
+                    ? session.payment_intent
+                    : null,
+                updatedAt: paidAt,
+                //updatedBy: "stripe webhook",
+              }
+            : //renovação de convenio
+              {
+                paymentStatus: "PAID",
+                paidAt,
+                isActive: true,
+                reactivatedAt: paidAt,
+                expirationDate: newExpirationDate,
+                stripeCheckoutSessionId: session.id,
+                stripePaymentIntentId:
+                  typeof session.payment_intent === "string"
+                    ? session.payment_intent
+                    : null,
+                updatedAt: paidAt,
+                //updatedBy: "stripe webhook",
+              };
+
         await db
           .update(patientsTable)
-          .set({
-            paymentStatus: "PAID",
-            paidAt,
-            isActive: true,
-            activeAt: paidAt,
-            expirationDate: newExpirationDate,
-            stripeCheckoutSessionId: session.id,
-            stripePaymentIntentId:
-              typeof session.payment_intent === "string"
-                ? session.payment_intent
-                : null,
-          })
+          .set(updateData)
           .where(
             and(
               eq(patientsTable.id, patientId),

@@ -2,11 +2,13 @@
 
 import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import Stripe from "stripe";
 import { z } from "zod";
 
 import { db } from "@/db";
 import { patientsTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
 const schema = z.object({
@@ -16,6 +18,16 @@ const schema = z.object({
 export const generateStripeRenewalLink = actionClient
   .schema(schema)
   .action(async ({ parsedInput }) => {
+    const authSession = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!authSession?.user) {
+      throw new Error("Unauthorized");
+    }
+    if (authSession.user.role !== "admin") {
+      throw new Error("Você não tem permissão para gerar um link de renovação");
+    }
+
     if (!process.env.STRIPE_SECRET_KEY)
       throw new Error("STRIPE_SECRET_KEY is not set");
     if (!process.env.STRIPE_GUADALUPE_PRICE_CONVENIO_ID)
