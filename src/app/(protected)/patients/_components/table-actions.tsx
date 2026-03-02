@@ -247,12 +247,12 @@ export default function TableActions({
                 <AlertDialogTitle>
                   {isPending ? "Ativar convenio" : "Renovar convenio"}
                 </AlertDialogTitle>
-                <AlertDialogDescription>
+                <AlertDialogDescription className="rounded-md p-2 text-center text-xl font-bold text-red-500">
                   {isPending
-                    ? "Atenção! Este convenio está aguardando a aprovação. Ao ativar você estará garantindo que o cliente ja fez o pagamento. Isso ira garantir que ele tenha acesso aos beneficios do convenio."
+                    ? "Atenção! Este convenio está aguardando aprovação. Ao ativar-lo, você estará confirmando que o cliente já fez o pagamento. Isso irá garantir acesso aos benefícios do convenio."
                     : isExpired
-                      ? "Tem certeza que deseja renovar este convenio? Isso irá renovar a data de vencimento por mais 1 ano."
-                      : "Tem certeza que deseja Fazer a Renovação antecipada deste convenio?  Isso irá somar 1 ano a data de vencimento atual."}
+                      ? "Atenção! Tem certeza que deseja renovar este convenio? Isso irá renovar a data de vencimento por mais 1 ano."
+                      : "Atenção! Tem certeza que deseja fazer a renovação antecipada deste convenio?  Isso irá somar 1 ano a data de vencimento atual."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <div className="grid gap-2 py-2">
