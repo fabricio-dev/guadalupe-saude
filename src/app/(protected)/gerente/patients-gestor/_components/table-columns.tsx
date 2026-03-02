@@ -40,10 +40,27 @@ interface Patient {
   reactivatedAt: Date | null;
   activeAt: Date | null;
   whatsappConsent: boolean;
+  paymentType: "PIX" | "CARD" | "DINHEIRO" | null;
+  paymentStatus:
+    | "PENDING"
+    | "PROOF_SUBMITTED"
+    | "PAID"
+    | "FAILED"
+    | "CANCELED"
+    | null;
+  stripeCheckoutSessionId: string | null;
+  stripePaymentIntentId: string | null;
+  pixProofNote: string | null;
+  paidAt: Date | null;
+  editedBy: string | null;
+  editedAt: Date | null;
 }
 
 interface TableColumnsProps {
-  onActivate: (patientId: string) => void;
+  onActivate: (
+    patientId: string,
+    paymentType: "PIX" | "CARD" | "DINHEIRO",
+  ) => void;
   onDelete: (patientId: string) => void;
   onPrintContract: (patient: Patient) => void;
   sellerId: string;

@@ -3,12 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { getUserName } from "@/actions/get-user-name";
 import { upsertPatient } from "@/actions/upsert-patient";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { patientsTable } from "@/db/schema";
 
 // Função para verificar CPF duplicado
@@ -93,64 +95,68 @@ const isValidCPF = (cpf: string): boolean => {
   return digit2 === parseInt(cleanCPF.charAt(10));
 };
 
-const formSchema = z
-  .object({
-    name: z.string().trim().min(1, { message: "Nome titular é obrigatório" }),
-    birthDate: z.string().optional(),
-    phoneNumber: z
-      .string()
-      .trim()
-      .min(10, { message: "Telefone é obrigatório" }),
-    rgNumber: z.string().optional(),
-    cpfNumber: z
-      .string()
-      .optional()
-      .refine((cpf) => !cpf || isValidCPF(cpf), {
-        message: "CPF inválido",
-      }),
-    address: z.string().optional(),
-    homeNumber: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
+const createFormSchema = () =>
+  z
+    .object({
+      name: z.string().trim().min(1, { message: "Nome titular é obrigatório" }),
+      birthDate: z.string().optional(),
+      phoneNumber: z
+        .string()
+        .trim()
+        .min(10, { message: "Telefone é obrigatório" }),
+      rgNumber: z.string().optional(),
+      cpfNumber: z
+        .string()
+        .optional()
+        .refine((cpf) => !cpf || isValidCPF(cpf), {
+          message: "CPF inválido",
+        }),
+      address: z.string().optional(),
+      homeNumber: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
 
-    cardType: z.enum(["enterprise", "personal"], {
-      message: "Tipo de cartão é obrigatório",
-    }),
-    Enterprise: z.string().optional(),
-    numberCards: z
-      .string()
-      .optional()
-      .refine((value) => !value || parseInt(value) >= 0, {
-        message: "A quantidade de cartões deve ser maior ou igual a 0",
-      })
-      .refine((value) => !value || parseInt(value) <= 6, {
-        message: "A quantidade de cartões não pode ser maior que 6",
+      cardType: z.enum(["enterprise", "personal"], {
+        message: "Tipo de cartão é obrigatório",
       }),
-    // TODO: Verificar se a quantidade de cartões é maior que o número de dependentes
+      Enterprise: z.string().optional(),
+      numberCards: z
+        .string()
+        .optional()
+        .refine((value) => !value || parseInt(value) >= 0, {
+          message: "A quantidade de cartões deve ser maior ou igual a 0",
+        })
+        .refine((value) => !value || parseInt(value) <= 6, {
+          message: "A quantidade de cartões não pode ser maior que 6",
+        }),
+      // TODO: Verificar se a quantidade de cartões é maior que o número de dependentes
 
-    sellerId: z.string().uuid({ message: "Vendedor é obrigatório" }),
-    clinicId: z.string().uuid({ message: "Clínica é obrigatória" }),
-    observation: z.string().optional(),
-    dependents1: z.string().optional(),
-    dependents2: z.string().optional(),
-    dependents3: z.string().optional(),
-    dependents4: z.string().optional(),
-    dependents5: z.string().optional(),
-    dependents6: z.string().optional(),
-    whatsappConsent: z.boolean(),
-  })
-  .superRefine((data, ctx) => {
-    if (
-      data.cardType === "enterprise" &&
-      (!data.Enterprise || data.Enterprise.trim() === "")
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Nome da empresa é obrigatório para cartão empresarial",
-        path: ["Enterprise"],
-      });
-    }
-  });
+      sellerId: z.string().uuid({ message: "Vendedor é obrigatório" }),
+      clinicId: z.string().uuid({ message: "Clínica é obrigatória" }),
+      observation: z.string().optional(),
+      paymentType: z.enum(["PIX", "CARD", "DINHEIRO"], {
+        message: "Tipo de pagamento é obrigatório",
+      }),
+      dependents1: z.string().optional(),
+      dependents2: z.string().optional(),
+      dependents3: z.string().optional(),
+      dependents4: z.string().optional(),
+      dependents5: z.string().optional(),
+      dependents6: z.string().optional(),
+      whatsappConsent: z.boolean(),
+    })
+    .superRefine((data, ctx) => {
+      if (
+        data.cardType === "enterprise" &&
+        (!data.Enterprise || data.Enterprise.trim() === "")
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Nome da empresa é obrigatório para cartão empresarial",
+          path: ["Enterprise"],
+        });
+      }
+    });
 
 interface UpsertPatientFormProps {
   isOpen: boolean;
@@ -212,66 +218,18 @@ const UpsertPatientForm = ({
   const [checkingCPF, setCheckingCPF] = useState(false);
   const [loadingState, setLoadingState] = useState(false);
   const [loadingCardType, setLoadingCardType] = useState(false);
+  const [loadingCardPaymentType, setLoadingCardPaymentType] = useState(false);
   const [loadingSeller, setLoadingSeller] = useState(false);
   const [loadingClinic, setLoadingClinic] = useState(false);
+  const [editedByName, setEditedByName] = useState<string | null>(null);
 
-  // Função utilitária para simular loading
-  const simulateLoading = async (
-    setLoading: (loading: boolean) => void,
-    delay = 500,
-  ) => {
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    setLoading(false);
-  };
-
-  // Função para carregar vendedores de uma clínica específica
-  const loadSellersByClinic = async (
-    clinicId: string,
-    preserveSelection = false,
-  ) => {
-    if (!clinicId) {
-      setSellers([]);
-      return;
-    }
-
-    setLoadingSeller(true);
-    try {
-      const response = await fetch(`/api/admin/sellers?clinicId=${clinicId}`);
-      if (response.ok) {
-        const sellersData = await response.json();
-        setSellers(sellersData || []);
-
-        // Se estamos preservando a seleção e o vendedor atual não está na lista, limpar
-        if (preserveSelection) {
-          const currentSellerId = form.getValues("sellerId");
-          const sellerExists = sellersData.find(
-            (s: Seller) => s.id === currentSellerId,
-          );
-          if (!sellerExists && currentSellerId) {
-            // Vendedor atual não está na nova clínica, mas não limpar automaticamente
-            // Deixar o usuário decidir
-          }
-        }
-      } else {
-        console.error(
-          "Erro na resposta:",
-          response.status,
-          response.statusText,
-        );
-        setSellers([]);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar vendedores:", error);
-      setSellers([]);
-    } finally {
-      setLoadingSeller(false);
-    }
-  };
-
-  const form = useForm<z.infer<typeof formSchema>>({
+  const formSchema = createFormSchema();
+  type FormValues = z.infer<typeof formSchema>;
+  const form = useForm<FormValues>({
     shouldUnregister: true,
-    resolver: zodResolver(formSchema),
+    // paymentType opcional no tipo para permitir select vazio na criação (obrigatório via refine)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: patient?.name ?? "",
       birthDate: patient?.birthDate
@@ -298,8 +256,74 @@ const UpsertPatientForm = ({
       dependents5: patient?.dependents5 ?? "",
       dependents6: patient?.dependents6 ?? "",
       whatsappConsent: patient?.whatsappConsent ?? true,
+      paymentType: patient ? (patient.paymentType ?? "PIX") : undefined,
     },
   });
+
+  useEffect(() => {
+    if (!patient?.editedBy) {
+      setEditedByName(null);
+      return;
+    }
+    getUserName({ userId: patient.editedBy }).then((res) => {
+      setEditedByName(res?.data ?? "Sistema");
+    });
+  }, [patient?.editedBy]);
+
+  // Função utilitária para simular loading
+  const simulateLoading = async (
+    setLoading: (loading: boolean) => void,
+    delay = 500,
+  ) => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    setLoading(false);
+  };
+
+  // Função para carregar vendedores de uma clínica específica
+  const loadSellersByClinic = useCallback(
+    async (clinicId: string, preserveSelection = false) => {
+      if (!clinicId) {
+        setSellers([]);
+        return;
+      }
+
+      setLoadingSeller(true);
+      try {
+        const response = await fetch(`/api/admin/sellers?clinicId=${clinicId}`);
+        if (response.ok) {
+          const sellersData = await response.json();
+          setSellers(sellersData || []);
+
+          // Se estamos preservando a seleção e o vendedor atual não está na lista, limpar
+          if (preserveSelection) {
+            const currentSellerId = form.getValues("sellerId");
+            const sellerExists = sellersData.find(
+              (s: Seller) => s.id === currentSellerId,
+            );
+            if (!sellerExists && currentSellerId) {
+              // Vendedor atual não está na nova clínica, mas não limpar automaticamente
+              // Deixar o usuário decidir
+            }
+          }
+        } else {
+          console.error(
+            "Erro na resposta:",
+            response.status,
+            response.statusText,
+          );
+          setSellers([]);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar vendedores:", error);
+        setSellers([]);
+      } finally {
+        setLoadingSeller(false);
+      }
+    },
+    [form],
+  );
+
 
   // Carregar dados do vendedor e clínica
   useEffect(() => {
@@ -341,6 +365,7 @@ const UpsertPatientForm = ({
         dependents5: patient?.dependents5 ?? "",
         dependents6: patient?.dependents6 ?? "",
         whatsappConsent: patient?.whatsappConsent ?? true,
+        paymentType: patient ? (patient.paymentType ?? "PIX") : undefined,
       });
     }
 
@@ -364,7 +389,7 @@ const UpsertPatientForm = ({
     };
 
     loadData();
-  }, [isOpen, patient, form, sellerId, clinicId]);
+  }, [isOpen, patient, form, sellerId, clinicId, loadSellersByClinic]);
 
   const upsertPatientAction = useAction(upsertPatient, {
     onSuccess: () => {
@@ -391,9 +416,11 @@ const UpsertPatientForm = ({
       sellerId: values.sellerId,
       Enterprise: values.Enterprise,
       observation: values.observation,
+      paymentType: values.paymentType,
     });
   };
-
+  const editedByDisplay =
+    patient?.editedAt && editedByName !== null ? editedByName : "Sistema";
   return (
     <DialogContent className="max-h-[88vh] max-w-4xl overflow-x-hidden overflow-y-auto">
       <DialogHeader>
@@ -404,7 +431,7 @@ const UpsertPatientForm = ({
           {patient
             ? `Edite as informações do paciente${
                 patient.updatedAt
-                  ? ` • Última atualização: ${new Date(patient.updatedAt).toLocaleDateString("pt-BR")}`
+                  ? `  - Editado por: ${editedByDisplay}  em: ${new Date(patient.editedAt ?? "").toLocaleDateString("pt-BR")} às ${new Date(patient.editedAt ?? "").toLocaleTimeString("pt-BR")}`
                   : ""
               }`
             : "Adicione um novo paciente ao sistema."}
@@ -821,7 +848,47 @@ const UpsertPatientForm = ({
               )}
             />
           </div>
-
+          <Separator className="my-3" />
+          <FormField
+            control={form.control}
+            name="paymentType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-amber-950">
+                  Tipo de Pagamento{" "}
+                  {loadingCardPaymentType && (
+                    <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
+                  )}
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      setLoadingCardPaymentType(true);
+                      setTimeout(() => {
+                        setLoadingCardPaymentType(false);
+                      }, 250);
+                    }
+                  }}
+                  disabled={loadingCardPaymentType}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione tipo de pagamento" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="PIX">PIX</SelectItem>
+                    <SelectItem value="CARD">CARD</SelectItem>
+                    <SelectItem value="DINHEIRO">DINHEIRO</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Separator className="my-3" />
           <div className="gap-1">
             <FormField
               control={form.control}
@@ -957,7 +1024,10 @@ const UpsertPatientForm = ({
           <DialogFooter>
             <Button
               type="submit"
-              disabled={upsertPatientAction.isExecuting}
+              disabled={
+                upsertPatientAction.isExecuting ||
+                (!!patient && !form.formState.isDirty)
+              }
               className="mt-1 w-full bg-emerald-600 hover:bg-emerald-900"
             >
               {upsertPatientAction.isExecuting

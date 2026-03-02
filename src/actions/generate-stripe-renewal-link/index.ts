@@ -7,7 +7,7 @@ import Stripe from "stripe";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { patientsTable } from "@/db/schema";
+import { patientsTable, sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -24,9 +24,9 @@ export const generateStripeRenewalLink = actionClient
     if (!authSession?.user) {
       throw new Error("Unauthorized");
     }
-    if (authSession.user.role !== "admin") {
-      throw new Error("Você não tem permissão para gerar um link de renovação");
-    }
+    // if (authSession.user.role !== "admin") {
+    //   throw new Error("Você não tem permissão para gerar um link de renovação");
+    // } tirei restricao para teste
 
     if (!process.env.STRIPE_SECRET_KEY)
       throw new Error("STRIPE_SECRET_KEY is not set");
@@ -46,12 +46,49 @@ export const generateStripeRenewalLink = actionClient
         isActive: patientsTable.isActive, // reactivatedAt
         activeAt: patientsTable.activeAt,
         reactivatedAt: patientsTable.reactivatedAt,
+        sellerId: patientsTable.sellerId,
+        clinicId: patientsTable.clinicId,
       })
       .from(patientsTable)
       .where(eq(patientsTable.id, parsedInput.patientId))
       .limit(1);
 
     if (!patient) throw new Error("Convênio não encontrado");
+
+    const seller = await db
+      .select()
+      .from(sellersTable)
+      .where(eq(sellersTable.email, authSession.user.email))
+      .limit(1);
+
+    // se nao for admin e o vendedor do convenio nao for o mesmo do usuario logado, retorna erro e nao gera link
+    // if (
+    //   authSession.user.role !== "admin" &&
+    //   seller[0].id !== patient.sellerId
+    // ) {
+    //   return {
+    //     error:
+    //       "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outro vendedor",
+    //   };
+    // }
+    if (
+      authSession.user.role !== "admin" &&
+      authSession.user.role !== "gestor"
+    ) {
+      if (patient.sellerId !== seller[0].id) {
+        return {
+          error:
+            "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outro vendedor",
+        };
+      }
+    } else if (seller[0].clinicId !== patient.clinicId) {
+      return {
+        error:
+          "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outra unidade",
+      };
+    }
+
+    //________________________________________________________________
 
     const isExpired =
       !patient.expirationDate ||
@@ -91,6 +128,8 @@ export const generateStripeRenewalLink = actionClient
         paymentStatus: "PENDING",
         stripeCheckoutSessionId: session.id,
         stripePaymentIntentId: null,
+        // editedBy: authSession.user.id,
+        // editedAt: new Date(),
       })
       .where(eq(patientsTable.id, patient.id));
 

@@ -1,6 +1,5 @@
 "use client";
 
-import dayjs from "dayjs";
 import {
   CheckCircle,
   CreditCardIcon,
@@ -9,6 +8,7 @@ import {
   PrinterIcon,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 
 import {
   AlertDialog,
@@ -37,9 +37,17 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import PrintCardComponent from "../../_components/print-card-component";
-import { RenewalLinkDialog } from "./renewal-link-dialog";
+import { RenewalLinkDialog } from "../../_components/renewal-link-dialog";
 import UpsertPatientForm from "./upsert-patient-form";
 
 interface Patient {
@@ -74,17 +82,43 @@ interface Patient {
   reactivatedAt: Date | null;
   activeAt: Date | null; // mudie aqui para o campo de ativação
   whatsappConsent: boolean;
+  paymentType: "PIX" | "CARD" | "DINHEIRO" | null;
+  paymentStatus:
+    | "PENDING"
+    | "PROOF_SUBMITTED"
+    | "PAID"
+    | "FAILED"
+    | "CANCELED"
+    | null;
+  stripeCheckoutSessionId: string | null;
+  stripePaymentIntentId: string | null;
+  pixProofNote: string | null;
+  paidAt: Date | null;
+  editedBy: string | null;
+  editedAt: Date | null;
 }
 
 interface TableActionsProps {
   patient: Patient;
   isExpired: boolean;
   isPending: boolean;
-  onActivate: (patientId: string) => void;
+  onActivate: (
+    patientId: string,
+    paymentType: "PIX" | "CARD" | "DINHEIRO",
+  ) => void;
   onDelete: (patientId: string) => void;
   onPrintCard: (patient: Patient) => void;
   onPrintContract: (patient: Patient) => void;
 }
+
+const PAYMENT_TYPE_OPTIONS: {
+  value: "PIX" | "CARD" | "DINHEIRO";
+  label: string;
+}[] = [
+  { value: "PIX", label: "PIX" },
+  { value: "CARD", label: "Cartão" },
+  { value: "DINHEIRO", label: "Dinheiro" },
+];
 
 export default function TableActions({
   patient,
@@ -95,6 +129,22 @@ export default function TableActions({
   //onPrintCard,
   onPrintContract,
 }: TableActionsProps) {
+  const [activateDialogOpen, setActivateDialogOpen] = useState(false);
+  const [selectedPaymentType, setSelectedPaymentType] = useState<
+    "" | "PIX" | "CARD" | "DINHEIRO"
+  >("");
+
+  const handleActivateDialogOpenChange = (open: boolean) => {
+    setActivateDialogOpen(open);
+    if (!open) setSelectedPaymentType("");
+  };
+
+  const handleActivateConfirm = () => {
+    if (!selectedPaymentType) return;
+    onActivate(patient.id, selectedPaymentType);
+    setActivateDialogOpen(false);
+  };
+
   return (
     <div className="flex items-center">
       <DropdownMenu>
@@ -176,18 +226,22 @@ export default function TableActions({
               </DropdownMenuItem>
             }
           />
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                className={`cursor-pointer ${isExpired ? "text-green-600" : "text-muted-foreground"}`}
-              >
-                <CheckCircle
-                  className={`mr-2 h-4 w-4 ${isExpired ? "text-green-600" : "text-muted-foreground"}`}
-                />
-                {isPending ? "Ativar" : "Renovar"}
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
+          <AlertDialog
+            open={activateDialogOpen}
+            onOpenChange={handleActivateDialogOpenChange}
+          >
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                setActivateDialogOpen(true);
+              }}
+              className={`cursor-pointer ${isExpired ? "text-green-600" : "text-muted-foreground"}`}
+            >
+              <CheckCircle
+                className={`mr-2 h-4 w-4 ${isExpired ? "text-green-600" : "text-muted-foreground"}`}
+              />
+              {isPending ? "Ativar" : "Renovar"}
+            </DropdownMenuItem>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
@@ -201,9 +255,35 @@ export default function TableActions({
                       : "Tem certeza que deseja Fazer a Renovação antecipada deste convenio?  Isso irá somar 1 ano a data de vencimento atual."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <div className="grid gap-2 py-2">
+                <Label htmlFor="activate-payment-type">
+                  Meio de pagamento <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={selectedPaymentType || undefined}
+                  onValueChange={(v) =>
+                    setSelectedPaymentType(v as "PIX" | "CARD" | "DINHEIRO")
+                  }
+                  required
+                >
+                  <SelectTrigger id="activate-payment-type" className="w-full">
+                    <SelectValue placeholder="Selecione o meio de pagamento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_TYPE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onActivate(patient.id)}>
+                <AlertDialogAction
+                  onClick={handleActivateConfirm}
+                  disabled={!selectedPaymentType}
+                >
                   {isPending ? "Ativar" : "Renovar"}
                 </AlertDialogAction>
               </AlertDialogFooter>

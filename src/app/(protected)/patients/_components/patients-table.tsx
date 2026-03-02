@@ -62,6 +62,20 @@ interface Patient {
   reactivatedAt: Date | null;
   activeAt: Date | null;
   whatsappConsent: boolean;
+  paymentType: "PIX" | "CARD" | "DINHEIRO" | null;
+  paymentStatus:
+    | "PENDING"
+    | "PROOF_SUBMITTED"
+    | "PAID"
+    | "FAILED"
+    | "CANCELED"
+    | null;
+  stripeCheckoutSessionId: string | null;
+  stripePaymentIntentId: string | null;
+  pixProofNote: string | null;
+  paidAt: Date | null;
+  editedBy: string | null;
+  editedAt: Date | null;
 }
 
 interface PatientsTableProps {
@@ -92,8 +106,11 @@ export default function PatientsTable({ patients }: PatientsTableProps) {
     },
   });
 
-  const handleActivatePatient = (patientId: string) => {
-    activatePatientAction.execute({ patientId });
+  const handleActivatePatient = (
+    patientId: string,
+    paymentType: "PIX" | "CARD" | "DINHEIRO",
+  ) => {
+    activatePatientAction.execute({ patientId, paymentType });
   };
 
   const handleDeletePatient = (patientId: string) => {

@@ -152,6 +152,8 @@ export const patientsTable = pgTable("patients", {
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   pixProofNote: text("pix_proof_note"),
   paidAt: timestamp("paid_at"),
+  editedBy: text("edited_by"),
+  editedAt: timestamp("edited_at"),
 });
 
 export const notificationTypeEnum = pgEnum("notification_type", [

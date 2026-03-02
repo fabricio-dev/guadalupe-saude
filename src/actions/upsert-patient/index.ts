@@ -56,7 +56,7 @@ export const upsertPatient = actionClient
       const existingPatient = await db.query.patientsTable.findFirst({
         where: eq(patientsTable.id, parsedInput.id),
       });
-
+      //parcilamente obsoleto esse codigo, era e quando permitia alterar a data de contrato, mas bloquiei isso para evitar conflitos
       // Determinar para qual campo vai a data do contrato
       const contractDateData: {
         activeAt?: Date;
@@ -105,10 +105,12 @@ export const upsertPatient = actionClient
               ? convertToUTCDate(patientData.expirationDate)
               : undefined,
             ...contractDateData,
+            editedBy: session.user.id,
+            editedAt: getActivationDate(),
           },
         });
     } else {
-      // Criação - sempre usar activeAt
+      // Criação - sempre usar activeAt; pagamento considerado pago na criação
       const newPatientData = {
         ...parsedInput,
         birthDate: parsedInput.birthDate
@@ -118,6 +120,10 @@ export const upsertPatient = actionClient
         activeAt: parsedInput.contractDate
           ? convertToUTCDate(parsedInput.contractDate)
           : getActivationDate(),
+        paymentStatus: "PAID" as const,
+        paidAt: getActivationDate(),
+        editedBy: session.user.id,
+        editedAt: getActivationDate(),
       };
 
       await db.insert(patientsTable).values(newPatientData);

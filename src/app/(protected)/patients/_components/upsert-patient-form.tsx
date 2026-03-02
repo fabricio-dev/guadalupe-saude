@@ -10,6 +10,7 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { getUserName } from "@/actions/get-user-name";
 import { upsertPatient } from "@/actions/upsert-patient";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { patientsTable } from "@/db/schema";
 import { usePermissions } from "@/hooks/use-permissions";
 
@@ -200,6 +202,9 @@ const createFormSchema = (patient?: typeof patientsTable.$inferSelect) =>
             message: `Data de vencimento nao pode ultrapassar 1 ano (limite: ${dayjs().add(1, "year").format("DD/MM/YYYY")})`,
           },
         ),
+      paymentType: z.enum(["PIX", "CARD", "DINHEIRO"], {
+        message: "Tipo de pagamento é obrigatório",
+      }),
       dependents1: z.string().optional(),
       dependents2: z.string().optional(),
       dependents3: z.string().optional(),
@@ -283,14 +288,29 @@ const UpsertPatientForm = ({
   // Estados para loaders dos comboboxes
   const [loadingState, setLoadingState] = useState(false);
   const [loadingCardType, setLoadingCardType] = useState(false);
+  const [loadingCardPaymentType, setLoadingCardPaymentType] = useState(false);
   const [loadingSeller, setLoadingSeller] = useState(false);
   const [loadingClinic, setLoadingClinic] = useState(false);
+  const [editedByName, setEditedByName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!patient?.editedBy) {
+      setEditedByName(null);
+      return;
+    }
+    getUserName({ userId: patient.editedBy }).then((res) => {
+      setEditedByName(res?.data ?? "Sistema");
+    });
+  }, [patient?.editedBy]);
 
   const formSchema = createFormSchema(patient);
+  type FormValues = z.infer<typeof formSchema>;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     shouldUnregister: true,
-    resolver: zodResolver(formSchema),
+    // paymentType opcional no tipo para permitir select vazio na criação (obrigatório via refine)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: patient?.name ?? "",
       birthDate: patient?.birthDate
@@ -313,6 +333,7 @@ const UpsertPatientForm = ({
       expirationDate: patient?.expirationDate
         ? dayjs(patient.expirationDate).format("YYYY-MM-DD")
         : "",
+      paymentType: patient ? (patient.paymentType ?? "PIX") : undefined,
       dependents1: patient?.dependents1 ?? "",
       dependents2: patient?.dependents2 ?? "",
       dependents3: patient?.dependents3 ?? "",
@@ -353,6 +374,7 @@ const UpsertPatientForm = ({
         expirationDate: patient?.expirationDate
           ? dayjs(patient.expirationDate).format("YYYY-MM-DD")
           : "",
+        paymentType: patient ? (patient.paymentType ?? "PIX") : undefined,
         dependents1: patient?.dependents1 ?? "",
         dependents2: patient?.dependents2 ?? "",
         dependents3: patient?.dependents3 ?? "",
@@ -367,6 +389,7 @@ const UpsertPatientForm = ({
         whatsappConsent: patient?.whatsappConsent ?? true,
       });
     }
+
     const loadData = async () => {
       try {
         // Carregar vendedores
@@ -496,8 +519,12 @@ const UpsertPatientForm = ({
       observation: values.observation,
       expirationDate,
       contractDate,
+      paymentType: values.paymentType,
     });
   };
+
+  const editedByDisplay =
+    patient?.editedAt && editedByName !== null ? editedByName : "Sistema";
 
   return (
     <DialogContent className="max-h-[88vh] max-w-4xl overflow-x-hidden overflow-y-auto">
@@ -508,8 +535,8 @@ const UpsertPatientForm = ({
         <DialogDescription className="text-amber-800">
           {patient
             ? `Edite as informações do paciente${
-                patient.updatedAt
-                  ? ` • Última atualização: ${new Date(patient.updatedAt).toLocaleDateString("pt-BR")}`
+                patient.editedAt
+                  ? ` - Editado por: ${editedByDisplay}  em: ${new Date(patient.editedAt).toLocaleDateString("pt-BR")} às ${new Date(patient.editedAt).toLocaleTimeString("pt-BR")}`
                   : ""
               }`
             : "Adicione um novo paciente ao sistema."}
@@ -761,7 +788,7 @@ const UpsertPatientForm = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-amber-950">
-                    Tipo de Cartão{" "}
+                    Tipo de Convenio{" "}
                     {loadingCardType && (
                       <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
                     )}
@@ -781,7 +808,7 @@ const UpsertPatientForm = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo de cartão" />
+                        <SelectValue placeholder="Selecione o tipo de Convenio" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -1029,7 +1056,47 @@ const UpsertPatientForm = ({
               )}
             />
           </div>
-
+          <Separator className="my-3" />
+          <FormField
+            control={form.control}
+            name="paymentType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-amber-950">
+                  Tipo de Pagamento{" "}
+                  {loadingCardPaymentType && (
+                    <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
+                  )}
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      setLoadingCardPaymentType(true);
+                      setTimeout(() => {
+                        setLoadingCardPaymentType(false);
+                      }, 250);
+                    }
+                  }}
+                  disabled={loadingCardPaymentType}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione tipo de pagamento" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="PIX">PIX</SelectItem>
+                    <SelectItem value="CARD">CARD</SelectItem>
+                    <SelectItem value="DINHEIRO">DINHEIRO</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Separator className="my-3" />
           <div className="gap-1">
             <FormField
               control={form.control}
@@ -1164,7 +1231,10 @@ const UpsertPatientForm = ({
           <DialogFooter>
             <Button
               type="submit"
-              disabled={upsertPatientAction.isExecuting}
+              disabled={
+                upsertPatientAction.isExecuting ||
+                (!!patient && !form.formState.isDirty)
+              }
               className="mt-1 w-full bg-emerald-600 hover:bg-emerald-900"
             >
               {upsertPatientAction.isExecuting

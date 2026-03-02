@@ -129,18 +129,29 @@ export const activatePatient = actionClient
     const updateData =
       patient.activeAt === null
         ? {
+            // Primeira ativação
             activeAt: now,
             isActive: true,
             expirationDate: newExpirationDate,
             updatedAt: now,
+            editedBy: session.user.id,
+            editedAt: now,
+            paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
+            paidAt: now,
+            paymentType: parsedInput.paymentType ?? "PIX", // recebe o tipo de pagamento do paciente
           }
         : patient.expirationDate && patient.expirationDate > now
           ? {
-              // Atualizar a data de expiração antecipada
+              // Atualizar a data de expiração antecipada (renovação antecipada)
               expirationDate: newExpirationDateAntecipated,
               reactivatedAt: now,
               isActive: true,
               updatedAt: now,
+              editedBy: session.user.id,
+              editedAt: now,
+              paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
+              paidAt: now,
+              paymentType: parsedInput.paymentType ?? "PIX",
             }
           : {
               // Atualizar a data de expiração
@@ -148,6 +159,11 @@ export const activatePatient = actionClient
               reactivatedAt: now,
               isActive: true,
               updatedAt: now,
+              editedBy: session.user.id,
+              editedAt: now,
+              paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
+              paidAt: now,
+              paymentType: parsedInput.paymentType ?? "PIX",
             };
 
     // Atualizar o paciente
