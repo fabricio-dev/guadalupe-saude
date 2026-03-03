@@ -236,7 +236,7 @@ export default function ContratoPage() {
             <div className="mx-auto mb-4 flex h-20 w-32 items-center justify-center">
               <Image
                 src="/logo03.svg"
-                alt="Mais Saúde Lasac Logo"
+                alt="Guadalupe Saúde Logo"
                 width={120}
                 height={80}
                 className="rounded-sm object-contain"
@@ -246,7 +246,7 @@ export default function ContratoPage() {
               TERMO DE CONVÊNIO
             </CardTitle>
             <div className="mt-2 text-lg font-semibold text-emerald-700">
-              CARTÃO MAIS SAÚDE LASAC
+              CARTÃO GUADALUPE SAÚDE
             </div>
           </CardHeader>
 
@@ -255,7 +255,7 @@ export default function ContratoPage() {
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-justify leading-relaxed">
                 Vimos pelo presente termo, formalizar adesão de V. As. junto ao{" "}
-                <strong>Cartão Mais Saúde Lasac</strong> a partir da data abaixo
+                <strong>Cartão Guadalupe Saúde</strong> a partir da data abaixo
                 citada.
               </p>
               <p className="mt-3 text-justify leading-relaxed">
@@ -306,8 +306,8 @@ export default function ContratoPage() {
                   Os laboratórios LASAC de{" "}
                   <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já
                   estão com valores promocionais nos exames, mas oferecem
-                  desconto adicional aos pacientes conveniados ao Cartão + Saúde
-                  LASAC.
+                  desconto adicional aos pacientes conveniados ao Cartão
+                  Guadalupe Saúde. .
                 </p>
               </div>
 

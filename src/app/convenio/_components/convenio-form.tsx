@@ -131,17 +131,23 @@ export function ConvenioForm() {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loadingClinics, setLoadingClinics] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
   const createStripeCheckoutAction = useAction(createStripeCheckout, {
     onSuccess: (result) => {
       const url = result.data?.url;
       if (url) {
-        window.location.href = url;
+        // pequeno delay para o usuário ver o aviso/loader antes de sair da página
+        setTimeout(() => {
+          window.location.href = url;
+        }, 3000);
       } else {
         toast.error("Não foi possível abrir a página de pagamento.");
+        setIsRedirectingToCheckout(false);
       }
     },
     onError: (error) => {
       toast.error(error.error.serverError || "Erro ao realizar pagamento");
+      setIsRedirectingToCheckout(false);
     },
   });
 
@@ -174,7 +180,7 @@ export function ConvenioForm() {
       dependents6: "",
       acceptTerms: false,
       whatsappConsent: true,
-      paymentType: "PIX",
+      paymentType: undefined as unknown as "PIX" | "CARD",
     },
   });
 
@@ -190,6 +196,20 @@ export function ConvenioForm() {
       }
 
       if (paymentType === "CARD") {
+        toast.message(
+          <div className="text-center text-xl font-bold text-emerald-700">
+            Redirecionando para pagamento
+          </div>,
+          {
+            description: (
+              <div className="text-lg text-emerald-700">
+                Aguarde enquanto abrimos a página segura de pagamento com
+                cartão.
+              </div>
+            ),
+          },
+        );
+        setIsRedirectingToCheckout(true);
         await createStripeCheckoutAction.execute({ patientId: data.patientId });
         return; // vai redirecionar
       }
@@ -781,16 +801,16 @@ export function ConvenioForm() {
                   name="paymentType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-emerald-950">
+                      <FormLabel className="text-sky-700">
                         Escolha como pagar
                       </FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder="Selecione forma de pagamento" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -895,13 +915,18 @@ export function ConvenioForm() {
               <div className="flex flex-col space-y-3 pt-6 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
                 <Button
                   type="submit"
-                  disabled={createPatientAction.isExecuting}
+                  disabled={
+                    createPatientAction.isExecuting || isRedirectingToCheckout
+                  }
                   className="w-full bg-sky-700/80 hover:bg-sky-700 sm:max-w-md"
                   size="lg"
                 >
                   {createPatientAction.isExecuting
                     ? "Enviando..."
-                    : "Solicitar Convênio"}
+                    : isRedirectingToCheckout ||
+                        createStripeCheckoutAction.isExecuting
+                      ? "Redirecionando para pagamento..."
+                      : "Solicitar Convênio"}
                 </Button>
               </div>
             </form>

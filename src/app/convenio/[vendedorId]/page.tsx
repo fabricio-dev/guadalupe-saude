@@ -253,13 +253,13 @@ export default function ConvenioVendedorPage() {
               <div className="flex items-center gap-3">
                 <Image
                   src="/logo03.svg"
-                  alt="Mais Saúde Lasac Logo"
+                  alt="Guadalupe Saúde Logo"
                   width={40}
                   height={30}
                   className="h-8 w-auto object-contain"
                 />
                 <h1 className="text-xl font-bold text-emerald-900">
-                  Mais Saúde Lasac
+                  Guadalupe Saúde
                 </h1>
               </div>
             </div>
