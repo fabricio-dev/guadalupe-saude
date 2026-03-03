@@ -790,7 +790,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-200">
+    <div className="min-h-screen bg-gradient-to-tr from-gray-50 to-gray-200">
       {/* Header com menu */}
       <header className="absolute top-0 right-0 z-50 p-4 sm:p-6">
         <DropdownMenu>
@@ -798,7 +798,7 @@ export default function Home() {
             <Button
               variant="outline"
               size="sm"
-              className="bg-emerald-600/90 text-white backdrop-blur-sm hover:bg-emerald-700/90"
+              className="border-none bg-sky-700/80 text-white shadow-none backdrop-blur-sm hover:bg-sky-700/90"
             >
               <Menu className="mr-2 h-4 w-4" />
               Menu
@@ -806,7 +806,7 @@ export default function Home() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-44"
+            className="w-44 border-none bg-white/90"
             sideOffset={8}
             avoidCollisions={true}
             collisionPadding={16}
@@ -832,7 +832,7 @@ export default function Home() {
       </header>
 
       {/* Seção principal */}
-      <div className="bg-gradient-to-r from-indigo-600 to-emerald-500 px-4 py-12">
+      <div className="bg-gradient-to-tr from-sky-900 via-sky-600 to-sky-900 px-4 py-12">
         <div className="mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: -30 }}
@@ -854,7 +854,7 @@ export default function Home() {
             <h1 className="mb-2 text-3xl font-bold text-white">
               Consulta de Benefícios
             </h1>
-            <p className="text-white/90">
+            <p className="font-medium text-white">
               Verifique seus convênios e benefícios utilizando CPF, nome do
               titular ou nome de dependente
             </p>
@@ -865,7 +865,7 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <Card className="shadow-xl">
+            <Card className="border-none bg-white/90">
               <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
@@ -883,7 +883,7 @@ export default function Home() {
                         placeholder="123.456.789-09 ou Maria Silva"
                         value={cpf}
                         onChange={handleCpfChange}
-                        className={`pr-10 ${errors.cpf ? "border-red-500" : ""}`}
+                        className={`rounded-full border-none bg-white pr-10 ${errors.cpf ? "border-red-500" : ""}`}
                         maxLength={60}
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -911,7 +911,14 @@ export default function Home() {
                         htmlFor="consentimento"
                         className="ml-2 block text-sm text-gray-700"
                       >
-                        Concordo com os termos de uso e política de privacidade
+                        <Link
+                          href="/contrato"
+                          target="_blank"
+                          className="text-sky-600 hover:text-sky-800/90"
+                        >
+                          Concordo com os termos de uso e política de
+                          privacidade
+                        </Link>
                       </label>
                     </div>
                     {errors.consentimento && (
@@ -924,7 +931,7 @@ export default function Home() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700"
+                    className="w-full bg-sky-600 hover:bg-sky-800/90"
                   >
                     <Search className="mr-2 h-4 w-4" />
                     {loading ? "Consultando..." : "Consultar Benefícios"}
@@ -941,7 +948,7 @@ export default function Home() {
                     <h2 className="mb-4 text-xl font-semibold text-gray-800">
                       Convênios encontrados
                     </h2>
-                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-8 rounded-xl p-4 lg:grid-cols-2">
                       {convenios.map((conv, i) => (
                         <motion.div
                           key={i}
@@ -976,7 +983,7 @@ export default function Home() {
                           >
                             {/* Face frontal - Logo */}
                             <div
-                              className={`absolute inset-0 rounded-xl shadow-lg ${
+                              className={`absolute inset-0 rounded-xl ${
                                 isFirefox
                                   ? flippedCards.has(i)
                                     ? "pointer-events-none opacity-0 md:pointer-events-none md:opacity-0"
@@ -1000,12 +1007,12 @@ export default function Home() {
                               }}
                             >
                               {/* Overlay para controlar a transparência do logo */}
-                              <div className="absolute inset-0 rounded-xl border border-gray-200 bg-white/90"></div>
+                              <div className="absolute inset-0 rounded-xl border-2 border-white bg-white/60"></div>
 
                               <div className="relative z-10 flex h-full flex-col justify-between p-2">
                                 <div className="text-center">
                                   <div className="inline-block rounded-lg px-2 py-1 md:px-4 md:py-2">
-                                    <h3 className="pt-2 text-lg font-bold text-gray-800 md:pt-4 md:text-xl">
+                                    <h3 className="rounded-lg bg-white p-2 pb-4 text-lg font-bold text-gray-800 md:pt-4 md:text-xl">
                                       {conv.nome}
                                     </h3>
                                   </div>
@@ -1041,7 +1048,7 @@ export default function Home() {
 
                             {/* Face traseira - Informações */}
                             <div
-                              className={`absolute inset-0 rounded-xl border border-gray-400 bg-white shadow-lg md:p-3 md:pl-6 ${
+                              className={`absolute inset-0 rounded-xl border bg-white shadow-lg md:p-3 md:pl-6 ${
                                 isFirefox
                                   ? flippedCards.has(i)
                                     ? "opacity-100"
@@ -1181,7 +1188,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="mb-4 text-2xl text-indigo-600">
+            <div className="mb-4 text-2xl text-sky-600">
               <IdCard className="h-8 w-8" />
             </div>
             <h3 className="mb-2 font-semibold text-gray-800">
@@ -1199,14 +1206,15 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="mb-4 text-2xl text-indigo-600">
+            <div className="mb-4 text-2xl text-sky-600">
               <Search className="h-8 w-8" />
             </div>
             <h3 className="mb-2 font-semibold text-gray-800">
               Consulta integrada
             </h3>
             <p className="text-gray-600">
-              Nossa plataforma buscará em todas as instituições conveniadas.
+              Nossa plataforma está acessível em todas as instituições
+              conveniadas.
             </p>
           </motion.div>
 
@@ -1216,14 +1224,14 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="rounded-lg bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
           >
-            <div className="mb-4 text-2xl text-indigo-600">
+            <div className="mb-4 text-2xl text-sky-600">
               <FileText className="h-8 w-8" />
             </div>
             <h3 className="mb-2 font-semibold text-gray-800">
               Resultados completos
             </h3>
             <p className="text-gray-600">
-              Veja todos seus benefícios com detalhes de cobertura e validade.
+              Veja todos seus benefícios com detalhes e vencimento.
             </p>
           </motion.div>
         </div>
@@ -1235,19 +1243,19 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center">
             <div className="mb-4 flex items-center justify-center gap-4">
               <a
-                href="https://www.facebook.com/profile.php?id=100093100000000"
+                href="https://www.facebook.com/guadalupe.saude"
                 className="transition hover:text-indigo-300"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://www.instagram.com/laboratoriolasac/"
+                href="https://www.instagram.com/guadalupe.saude/"
                 className="transition hover:text-indigo-300"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://www.linkedin.com/company/laboratorio-lasac/"
+                href="https://www.linkedin.com/company/guadalupe-saude/"
                 className="transition hover:text-indigo-300"
               >
                 <Linkedin className="h-5 w-5" />
@@ -1256,8 +1264,7 @@ export default function Home() {
           </div>
           <div className="mt-6 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
             <p>
-              © 2025 Laboratório Lasac. Todos os direitos reservados. Powered
-              by{" "}
+              © 2026 Guadalupe Saúde. Todos os direitos reservados. Powered by{" "}
               <a
                 href="https://www.sertaosoftware.com.br"
                 className="transition hover:text-indigo-300"
@@ -1266,10 +1273,7 @@ export default function Home() {
               </a>
             </p>
             <p className="mt-2">
-              <a
-                href="https://www.google.com"
-                className="transition hover:text-indigo-300"
-              >
+              <a href="/contrato" className="transition hover:text-indigo-300">
                 Termos de uso
               </a>{" "}
               |{" "}
@@ -1337,7 +1341,13 @@ export default function Home() {
                   className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <Label htmlFor="consentimento-cartao" className="text-sm">
-                  Concordo com os termos de uso e política de privacidade
+                  <Link
+                    href="/contrato"
+                    target="_blank"
+                    className="text-sky-600 hover:text-sky-800/90"
+                  >
+                    Concordo com os termos de uso e política de privacidade
+                  </Link>
                 </Label>
               </div>
               {errorsCartao.consentimento && (
@@ -1359,7 +1369,7 @@ export default function Home() {
               <Button
                 onClick={gerarCartaoPdf}
                 disabled={loadingCartao}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                className="flex-1 bg-sky-600 hover:bg-sky-800/90"
               >
                 {loadingCartao ? (
                   <>

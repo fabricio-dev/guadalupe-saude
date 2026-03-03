@@ -75,7 +75,7 @@ export default function ConvenioPage() {
               <div className="flex items-center gap-3">
                 <Image
                   src="/logo03.svg"
-                  alt="Mais Saúde Lasac Logo"
+                  alt="Guadalupe Saúde Logo"
                   width={40}
                   height={30}
                   className="h-8 w-auto object-contain"

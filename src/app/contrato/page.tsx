@@ -201,18 +201,7 @@ export default function ContratoPage() {
       <header className="bg-gradient-to-r from-indigo-600 to-emerald-500 px-4 py-6">
         <div className="mx-auto max-w-4xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/convenio">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Voltar
-                </Button>
-              </Link>
-            </div>
+            <div className="flex items-center space-x-4"></div>
 
             <div className="flex space-x-2">
               <Button
