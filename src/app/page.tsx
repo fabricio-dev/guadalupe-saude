@@ -1264,7 +1264,8 @@ export default function Home() {
           </div>
           <div className="mt-6 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
             <p>
-              © 2026 Guadalupe Saúde. Todos os direitos reservados. Powered by{" "}
+              © {new Date().getFullYear()} Guadalupe Saúde. Todos os direitos
+              reservados. Powered by{" "}
               <a
                 href="https://www.sertaosoftware.com.br"
                 className="transition hover:text-indigo-300"

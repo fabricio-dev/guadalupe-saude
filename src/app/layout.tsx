@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     "Guadalupe Saúde",
     "Sistema Guadalupe Saúde",
     "Plataforma Guadalupe Saúde",
+    "mais saúde guadalupe",
 
     // Intenção principal (gestão / clínica / convênios)
     "gestão de convênios",

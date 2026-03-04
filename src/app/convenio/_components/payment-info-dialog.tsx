@@ -22,7 +22,8 @@ export function PaymentInfoDialog({
   onOpenChange,
 }: PaymentInfoDialogProps) {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "5587988749746"; // Número com código do país
+    const phoneNumber =
+      process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA || ""; // Número com código do país
     const message =
       "Olá! Gostaria de enviar o comprovante de pagamento do convênio.";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -31,7 +32,9 @@ export function PaymentInfoDialog({
 
   const handleCopyPixKey = async () => {
     try {
-      await navigator.clipboard.writeText("041.347.194-29");
+      await navigator.clipboard.writeText(
+        process.env.NEXT_PUBLIC_CHAVE_PIX_PRINCIPAL_EMPRESA || "",
+      );
       toast.success("Chave PIX copiada!");
     } catch {
       toast.error("Erro ao copiar chave PIX");
@@ -45,7 +48,7 @@ export function PaymentInfoDialog({
         //onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle className="text-center text-emerald-900">
+          <DialogTitle className="text-center text-sky-900">
             Informações de Pagamento PIX
           </DialogTitle>
           <DialogDescription className="text-center">
@@ -68,14 +71,15 @@ export function PaymentInfoDialog({
           {/* Chave PIX */}
           <div className="rounded-lg bg-gray-50 p-0 text-center">
             <p className="p-2 text-sm font-medium text-gray-700">
-              Chave PIX (CPF/CNPJ): 041.347.194-29
+              Chave PIX (CPF/CNPJ):
+              {process.env.NEXT_PUBLIC_CHAVE_PIX_PRINCIPAL_EMPRESA}
               <Button
                 onClick={handleCopyPixKey}
                 variant="outline"
                 size="sm"
                 className="ml-1 h-6 w-36 p-0"
               >
-                📋 Copiar chave PIX
+                📋 Copiar
               </Button>
             </p>
           </div>
@@ -92,7 +96,8 @@ export function PaymentInfoDialog({
               className="w-full bg-green-600 text-white hover:bg-green-700"
             >
               <span className="mr-2">📱</span>
-              Enviar Comprovante - (87) 98874-9746
+              Enviar Comprovante para :{" "}
+              {process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA || ""}
             </Button>
 
             <p className="text-xs text-gray-500">

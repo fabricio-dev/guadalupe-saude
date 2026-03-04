@@ -127,7 +127,7 @@ const SingUpForm = () => {
           <CardFooter className="flex justify-center">
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-900"
+              className="w-full bg-sky-600 hover:bg-sky-800/90"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? (

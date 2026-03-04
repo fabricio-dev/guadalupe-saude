@@ -49,7 +49,7 @@ export default function ConvenioPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-indigo-600 to-emerald-500">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-sky-900 to-sky-500">
         <div className="text-white">Carregando...</div>
       </div>
     );
@@ -60,7 +60,7 @@ export default function ConvenioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-600 to-emerald-500">
+    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-600 to-sky-900">
       {/* Header */}
       <header className="bg-white/80 shadow-sm backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-4">
@@ -80,7 +80,7 @@ export default function ConvenioPage() {
                   height={30}
                   className="h-8 w-auto object-contain"
                 />
-                <h1 className="text-xl font-bold text-emerald-900">
+                <h1 className="text-xl font-bold text-sky-900">
                   Guadalupe Saúde
                 </h1>
               </div>

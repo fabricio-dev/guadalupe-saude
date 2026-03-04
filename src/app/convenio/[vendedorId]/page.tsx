@@ -13,6 +13,7 @@ import { z } from "zod";
 
 import { createPatient } from "@/actions/create-patient";
 import { createPatientSchema } from "@/actions/create-patient/schema";
+import { createStripeCheckout } from "@/actions/create-stripe-checkout";
 import ContratoDialog from "@/app/contrato/_components/contrato-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -130,7 +131,7 @@ interface VendedorInfo {
   pixKeyType: string;
 }
 
-const pixEmpresa = "041.347.194-29";
+const pixEmpresa = process.env.NEXT_PUBLIC_CHAVE_PIX_PRINCIPAL_EMPRESA || "";
 
 export default function ConvenioVendedorPage() {
   const router = useRouter();
@@ -140,10 +141,28 @@ export default function ConvenioVendedorPage() {
   const [vendedorInfo, setVendedorInfo] = useState<VendedorInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-
+  const [isRedirectingToCheckout, setIsRedirectingToCheckout] = useState(false);
+  const createStripeCheckoutAction = useAction(createStripeCheckout, {
+    onSuccess: (result) => {
+      const url = result.data?.url;
+      if (url) {
+        // pequeno delay para o usuário ver o aviso/loader antes de sair da página
+        setTimeout(() => {
+          window.location.href = url;
+        }, 3000);
+      } else {
+        toast.error("Não foi possível abrir a página de pagamento.");
+        setIsRedirectingToCheckout(false);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.error.serverError || "Erro ao realizar pagamento");
+      setIsRedirectingToCheckout(false);
+    },
+  });
   const vendedorId = params.vendedorId as string;
   const clinicId =
-    searchParams.get("clinicId") || "e95a2da4-96c0-4277-b4c3-bcf8f2c5414a";
+    searchParams.get("clinicId") || process.env.NEXT_PUBLIC_DEFAULT_CLINIC_ID; // ID da clínica padrão NAO TENHO CERTEZA SE EH USADO
 
   // Buscar informações do vendedor
   useEffect(() => {
@@ -197,6 +216,7 @@ export default function ConvenioVendedorPage() {
       dependents6: "",
       acceptTerms: false,
       whatsappConsent: true,
+      paymentType: undefined as unknown as "PIX" | "CARD",
     },
   });
 
@@ -209,12 +229,38 @@ export default function ConvenioVendedorPage() {
   }, [vendedorInfo, form]);
 
   const createPatientAction = useAction(createPatient, {
-    onSuccess: () => {
-      toast.success(
-        `Solicitação de convênio enviada com sucesso! Nossa equipe entrará em contato em breve.`,
-      );
+    onSuccess: async ({ data }) => {
+      toast.success("Solicitação de convênio enviada com sucesso!");
+
+      const paymentType = form.getValues("paymentType");
+
+      if (!data?.patientId) {
+        toast.error("Não foi possível identificar o convênio criado.");
+        return;
+      }
+
+      if (paymentType === "CARD") {
+        toast.message(
+          <div className="text-center text-xl font-bold text-emerald-700">
+            Redirecionando para pagamento
+          </div>,
+          {
+            description: (
+              <div className="text-lg text-emerald-700">
+                Aguarde enquanto abrimos a página segura de pagamento com
+                cartão.
+              </div>
+            ),
+          },
+        );
+        setIsRedirectingToCheckout(true);
+        await createStripeCheckoutAction.execute({ patientId: data.patientId });
+        return; // vai redirecionar
+      }
+
+      // PIX
       setShowPaymentDialog(true);
-      // Reset do form após um pequeno delay para evitar conflitos
+
       setTimeout(() => {
         form.reset();
       }, 100);
@@ -227,14 +273,14 @@ export default function ConvenioVendedorPage() {
   const onSubmit = (values: z.infer<typeof createPatientSchema>) => {
     createPatientAction.execute({
       ...values,
-      clinicId: vendedorInfo?.clinicId || clinicId,
+      clinicId: vendedorInfo?.clinicId || clinicId || "",
       sellerId: vendedorId,
     });
   };
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-indigo-600 to-emerald-500">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-900 via-sky-600 to-sky-900">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-white" />
           <p className="mt-2 text-white">Carregando...</p>
@@ -244,7 +290,7 @@ export default function ConvenioVendedorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-600 to-emerald-500">
+    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-sky-600 to-sky-900">
       {/* Header */}
       <header className="bg-white/80 shadow-sm backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-4">
@@ -274,21 +320,21 @@ export default function ConvenioVendedorPage() {
               Seja um Conveniado
             </h1>
             {vendedorInfo && (
-              <div className="mb-4 rounded-lg bg-white p-6 shadow-sm">
+              <div className="mb-4 rounded-lg bg-white/95 p-6 shadow-sm">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div className="flex items-center justify-center text-emerald-800">
+                  <div className="flex items-center justify-center text-sky-900">
                     <span className="min-w-[80px] font-semibold">
                       Vendedor:
                     </span>
                     <span className="ml-2">{vendedorInfo.name}</span>
                   </div>
 
-                  <div className="flex items-center justify-center text-emerald-700">
+                  <div className="flex items-center justify-center text-sky-900">
                     <span className="min-w-[80px] font-semibold">Unidade:</span>
                     <span className="ml-2">{vendedorInfo.clinicName}</span>
                   </div>
 
-                  <div className="flex items-center justify-center text-emerald-700">
+                  <div className="flex items-center justify-center text-sky-900">
                     <span className="min-w-[80px] font-semibold">
                       WhatsApp:
                     </span>
@@ -296,16 +342,22 @@ export default function ConvenioVendedorPage() {
                       href={`https://wa.me/55${vendedorInfo.phoneNumber.replace(/\D/g, "")}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-2 text-emerald-600 transition-colors hover:text-emerald-800 hover:underline"
+                      className="ml-2 text-sky-900 transition-colors hover:text-sky-800 hover:underline"
                     >
                       {vendedorInfo.phoneNumber}
                     </a>
                   </div>
 
-                  <div className="flex items-center justify-center text-emerald-700">
+                  <div className="flex items-center justify-center text-sky-900">
                     <span className="min-w-[80px] font-semibold">PIX:</span>
                     <span className="rounded bg-gray-100 px-2 py-1 font-mono text-sm">
-                      {pixEmpresa}
+                      <button
+                        onClick={() => setShowPaymentDialog(true)}
+                        className="ml-2 rounded-md p-1.5 text-sky-900 transition-colors hover:bg-green-300 hover:text-sky-900"
+                        title="Abrir informações de pagamento"
+                      >
+                        {pixEmpresa}
+                      </button>
                     </span>
                     <button
                       onClick={async () => {
@@ -316,7 +368,7 @@ export default function ConvenioVendedorPage() {
                           toast.error("Erro ao copiar chave PIX");
                         }
                       }}
-                      className="ml-2 rounded p-1.5 text-emerald-600 transition-colors hover:bg-emerald-100 hover:text-emerald-800"
+                      className="ml-2 rounded p-1.5 text-sky-900 transition-colors hover:bg-sky-100 hover:text-sky-800"
                       title="Copiar chave PIX"
                     >
                       <Copy className="h-4 w-4" />
@@ -328,7 +380,8 @@ export default function ConvenioVendedorPage() {
             <p className="text-white">
               Preencha seus dados para solicitar seu convênio. Ao finalizar seu
               cadastro, faça o pagamento atraves do PIX e envie o comprovante
-              para o vendedor, no numero do whatsapp.
+              para o vendedor ou no numero do whatsapp da empresa{" "}
+              {process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA}.
             </p>
           </div>
 
@@ -360,6 +413,7 @@ export default function ConvenioVendedorPage() {
                             </FormLabel>
                             <FormControl>
                               <Input
+                                className="bg-white"
                                 placeholder="Digite o nome completo"
                                 {...field}
                               />
@@ -378,7 +432,11 @@ export default function ConvenioVendedorPage() {
                               Data de Nascimento
                             </FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
+                              <Input
+                                type="date"
+                                {...field}
+                                className="bg-white"
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -399,6 +457,7 @@ export default function ConvenioVendedorPage() {
                                 mask="_"
                                 placeholder="(11) 99999-9999"
                                 customInput={Input}
+                                className="bg-white"
                                 value={field.value}
                                 onValueChange={(values) => {
                                   field.onChange(values.value);
@@ -422,6 +481,7 @@ export default function ConvenioVendedorPage() {
                               <Input
                                 placeholder="Digite apenas números"
                                 {...field}
+                                className="bg-white"
                                 onChange={(e) => {
                                   const value = e.target.value.replace(
                                     /\D/g,
@@ -453,6 +513,7 @@ export default function ConvenioVendedorPage() {
                                 mask="_"
                                 placeholder="000.000.000-00"
                                 customInput={Input}
+                                className="bg-white"
                                 value={field.value}
                                 onValueChange={(values) => {
                                   field.onChange(values.value);
@@ -508,6 +569,7 @@ export default function ConvenioVendedorPage() {
                               <Input
                                 placeholder="Rua, Avenida, número"
                                 {...field}
+                                className="bg-white"
                               />
                             </FormControl>
                             <FormMessage />
@@ -527,6 +589,7 @@ export default function ConvenioVendedorPage() {
                               <Input
                                 placeholder="Digite o nome do bairro"
                                 {...field}
+                                className="bg-white"
                               />
                             </FormControl>
                             <FormMessage />
@@ -546,6 +609,7 @@ export default function ConvenioVendedorPage() {
                               <Input
                                 placeholder="Digite o nome da cidade"
                                 {...field}
+                                className="bg-white"
                               />
                             </FormControl>
                             <FormMessage />
@@ -686,6 +750,7 @@ export default function ConvenioVendedorPage() {
                               <Input
                                 placeholder="Nome do dependente (opcional)"
                                 {...field}
+                                className="bg-white"
                               />
                             </FormControl>
                             <FormMessage />
@@ -810,92 +875,144 @@ export default function ConvenioVendedorPage() {
 
                   {/* Observações */}
                   {/* <div></div> */}
+                  <div>
+                    <h3 className="mb-4 text-lg font-semibold text-sky-700">
+                      Forma de Pagamento
+                    </h3>
 
-                  {/* Termos de Uso  e consentimento WhatsApp*/}
-                  <div className="pt-4">
                     <FormField
                       control={form.control}
-                      name="whatsappConsent"
+                      name="paymentType"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
-                          <FormControl>
-                            <input
-                              type="checkbox"
-                              checked={field.value}
-                              onChange={field.onChange}
-                              className="mt-2 mb-2 h-4 w-4 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="mt-2 mb-2 text-sm font-normal text-emerald-950">
-                              Autorizo o recebimento de mensagens via WhatsApp
-                              relacionadas a avisos, lembretes e comunicações
-                              sobre o meu cartão LASAC.
-                            </FormLabel>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="acceptTerms"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
-                          <FormControl>
-                            <input
-                              type="checkbox"
-                              checked={field.value}
-                              onChange={field.onChange}
-                              className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="text-sm text-emerald-950">
-                              Aceito os{" "}
-                              <ContratoDialog
-                                trigger={
-                                  <button className="text-emerald-600 underline hover:text-emerald-800">
-                                    termos de uso e política de privacidade
-                                  </button>
-                                }
-                              />
-                            </FormLabel>
-
-                            <FormLabel className="text-emerald-950">
-                              Ao aceitar, você concorda em receber mensagens
-                              sobre atualizações de status do convênio por
-                              WhatsApp.
-                            </FormLabel>
-                            <FormMessage />
-                          </div>
+                        <FormItem>
+                          <FormLabel className="text-sky-700">
+                            Escolha como pagar
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione forma de pagamento" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="PIX">PIX (QR Code)</SelectItem>
+                              <SelectItem value="CARD">
+                                Cartão (Crédito)
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
+                  {/* Termos de Uso  e consentimento WhatsApp*/}
+                  <div>
+                    <h3 className="mb-4 text-lg font-semibold text-sky-700">
+                      Termos e Condições
+                    </h3>
 
+                    <div className="space-y-4">
+                      <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
+                        <p className="mb-3 text-sm text-sky-800">
+                          Para prosseguir com sua solicitação de convênio, é
+                          necessário aceitar nossos termos de uso e política de
+                          privacidade.
+                        </p>
+                        <div className="mb-3">
+                          <ContratoDialog
+                            trigger={
+                              <button className="inline-flex items-center text-sm font-medium text-emerald-700 underline hover:text-emerald-900">
+                                📋 Visualizar Contrato e Termos de Uso
+                                <svg
+                                  className="ml-1 h-3 w-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                  />
+                                </svg>
+                              </button>
+                            }
+                          />
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name="whatsappConsent"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={field.value}
+                                  onChange={field.onChange}
+                                  className="mt-2 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-500"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="mt-2 mb-2 text-sm font-medium text-sky-700">
+                                  Autorizo o recebimento de mensagens via
+                                  WhatsApp sobre avisos, lembretes e
+                                  comunicações sobre o meu cartão Guadalupe
+                                  Saúde.
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="acceptTerms"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={field.value}
+                                  onChange={field.onChange}
+                                  className="mt-0.5 h-4 w-4 rounded border-sky-300 text-sky-600 focus:ring-sky-500"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-medium text-sky-700">
+                                  Li e aceito os termos de uso e política de
+                                  privacidade
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
                   {/* Botões de Envio */}
+
                   <div className="flex flex-col space-y-3 pt-6 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
                     <Button
                       type="submit"
-                      variant="outline"
-                      disabled={createPatientAction.isExecuting}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 sm:max-w-md"
+                      disabled={
+                        createPatientAction.isExecuting ||
+                        isRedirectingToCheckout
+                      }
+                      className="w-full bg-sky-700/80 hover:bg-sky-700 sm:max-w-md"
                       size="lg"
                     >
                       {createPatientAction.isExecuting
                         ? "Enviando..."
-                        : "Solicitar Convênio"}
-                    </Button>
-
-                    <Button
-                      type="button"
-                      onClick={() => setShowPaymentDialog(true)}
-                      variant="outline"
-                      className="w-full text-black hover:bg-gray-200 sm:w-auto"
-                      size="lg"
-                    >
-                      💳 Informações de Pagamento
+                        : isRedirectingToCheckout ||
+                            createStripeCheckoutAction.isExecuting
+                          ? "Redirecionando para pagamento..."
+                          : "Solicitar Convênio"}
                     </Button>
                   </div>
                 </form>

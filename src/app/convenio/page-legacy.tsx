@@ -708,12 +708,12 @@ function ConvenioLegacy() {
             <div className="logo-section">
               <Image
                 src="/logo03.svg"
-                alt="Mais Saúde Lasac Logo"
+                alt="Guadalupe Saúde Logo"
                 width={40}
                 height={30}
                 className="h-8 w-auto object-contain"
               />
-              <h1 className="logo-title">Mais Saúde Lasac</h1>
+              <h1 className="logo-title">Guadalupe Saúde</h1>
             </div>
           </div>
         </div>

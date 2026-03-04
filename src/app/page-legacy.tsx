@@ -1380,7 +1380,7 @@ function HomeLegacy() {
             <Button
               variant="outline"
               size="sm"
-              className="bg-emerald-600/90 text-white backdrop-blur-sm hover:bg-emerald-700/90"
+              className="bg-sky-600 text-white backdrop-blur-sm hover:bg-sky-800/90"
             >
               <Menu className="mr-2 h-4 w-4" />
               Menu
@@ -1388,7 +1388,7 @@ function HomeLegacy() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-44 bg-white"
+            className="w-44 border-none bg-white"
             sideOffset={8}
             avoidCollisions={true}
             collisionPadding={16}
@@ -1421,7 +1421,7 @@ function HomeLegacy() {
               <div className="logo-box">
                 <Image
                   src="/logo03.svg"
-                  alt="Mais Saúde Lasac Logo"
+                  alt="Guadalupe Saúde Logo"
                   width={200}
                   height={150}
                   className="h-full w-full rounded-lg object-contain"
@@ -1436,7 +1436,7 @@ function HomeLegacy() {
           </div>
 
           <div className="form-section">
-            <Card className="border-0 shadow-xl">
+            <Card className="border-none bg-white/90 shadow-xl">
               <CardContent className="form-content">
                 <form onSubmit={handleSubmit} className="form-space">
                   <div className="input-group">
@@ -1476,7 +1476,14 @@ function HomeLegacy() {
                         className="checkbox-input"
                       />
                       <label htmlFor="consentimento" className="checkbox-label">
-                        Concordo com os termos de uso e política de privacidade
+                        <Link
+                          href="/contrato"
+                          target="_blank"
+                          className="text-sky-600 hover:text-sky-800/90"
+                        >
+                          Concordo com os termos de uso e política de
+                          privacidade
+                        </Link>
                       </label>
                     </div>
                     {errors.consentimento && (
@@ -1612,7 +1619,7 @@ function HomeLegacy() {
             </div>
             <h3 className="feature-title">Resultados completos</h3>
             <p className="feature-description">
-              Veja todos seus benefícios com detalhes de cobertura e validade.
+              Veja todos seus benefícios com detalhes e vencimento.
             </p>
           </div>
         </div>
@@ -1624,19 +1631,19 @@ function HomeLegacy() {
           <div className="footer-content">
             <div className="social-links">
               <a
-                href="https://www.facebook.com/profile.php?id=100093100000000"
+                href="https://www.facebook.com/guadalupe.saude"
                 className="social-link"
               >
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://www.instagram.com/laboratoriolasac/"
+                href="https://www.instagram.com/guadalupe.saude/"
                 className="social-link"
               >
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="https://www.linkedin.com/company/laboratorio-lasac/"
+                href="https://www.linkedin.com/company/guadalupe-saude/"
                 className="social-link"
               >
                 <Linkedin className="h-5 w-5" />
@@ -1645,8 +1652,7 @@ function HomeLegacy() {
           </div>
           <div className="footer-divider">
             <p>
-              © 2025 Laboratório Lasac. Todos os direitos reservados. Powered
-              by{" "}
+              © 2026 Guadalupe Saúde. Todos os direitos reservados. Powered by{" "}
               <a
                 href="https://www.sertaosoftware.com.br"
                 className="footer-link"
@@ -1655,11 +1661,11 @@ function HomeLegacy() {
               </a>
             </p>
             <p className="footer-links">
-              <a href="https://www.google.com" className="footer-link">
+              <a href="/contrato" className="footer-link">
                 Termos de uso
               </a>{" "}
               |{" "}
-              <a href="https://www.google.com" className="footer-link">
+              <a href="/contrato" className="footer-link">
                 Política de privacidade
               </a>
             </p>
@@ -1669,7 +1675,7 @@ function HomeLegacy() {
 
       {/* Diálogo para gerar cartão PDF */}
       <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
-        <DialogContent className="dialog-pdf bg-white">
+        <DialogContent className="dialog-pdf border-none bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -1720,7 +1726,13 @@ function HomeLegacy() {
                   className="mt-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <Label htmlFor="consentimento-cartao" className="pt-2 text-sm">
-                  Concordo com os termos de uso e política de privacidade
+                  <Link
+                    href="/contrato"
+                    target="_blank"
+                    className="text-sky-600 hover:text-sky-800/90"
+                  >
+                    Concordo com os termos de uso e política de privacidade
+                  </Link>
                 </Label>
               </div>
               {errorsCartao.consentimento && (
@@ -1742,7 +1754,7 @@ function HomeLegacy() {
               <Button
                 onClick={gerarCartaoPdf}
                 disabled={loadingCartao}
-                className="btn-emerald flex-1"
+                className="flex-1 bg-sky-600 hover:bg-sky-800/90"
               >
                 {loadingCartao ? (
                   <>

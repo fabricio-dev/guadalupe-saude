@@ -1,6 +1,7 @@
 "use client";
 
 import { FileText, PrinterIcon } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 interface ContratoDialogProps {
   trigger?: React.ReactNode;
   variant?: "default" | "outline" | "ghost";
@@ -33,7 +33,7 @@ const ContratoContent = () => {
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Termo de Convênio - Cartão Mais Saúde LASAC</title>
+        <title>Termo de Convênio - Guadalupe Saúde </title>
         <style>
           @page {
             size: A4;
@@ -70,14 +70,14 @@ const ContratoContent = () => {
             color: #047857;
           }
           .intro {
-            background-color: #ecfdf5;
-            border: 1px solid #d1fae5;
+            background-color: #f0fdfa;
+            border: 1px solid #22558a;
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
           }
           .clause {
-            border: 1px solid #e5e7eb;
+            border: 1px solid #22558a;
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
@@ -88,7 +88,7 @@ const ContratoContent = () => {
             margin-bottom: 15px;
           }
           .clause-number {
-            background-color: #059669;
+            background-color: #22558a;
             color: white;
             width: 32px;
             height: 32px;
@@ -101,7 +101,7 @@ const ContratoContent = () => {
           }
           .clause-title {
             font-weight: 600;
-            color: #065f46;
+            color: #22558a;
             font-size: 16px;
           }
           .clause-content {
@@ -109,25 +109,25 @@ const ContratoContent = () => {
             line-height: 1.8;
           }
           .footer {
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #22558a;
             padding-top: 20px;
             text-align: center;
             margin-top: 40px;
           }
           strong {
             font-weight: 600;
-            color: #065f46;
+            color: #22558a;
           }
         </style>
       </head>
       <body>
         <div class="header">
           <div class="title">TERMO DE CONVÊNIO</div>
-          <div class="subtitle">CARTÃO MAIS SAÚDE LASAC</div>
+          <div class="subtitle">CARTÃO GUADALUPE SAÚDE</div>
         </div>
 
         <div class="intro">
-          <p><strong>Vimos pelo presente termo, formalizar adesão de V. As. junto ao Cartão Mais Saúde Lasac a partir da data abaixo citada.</strong></p>
+          <p><strong>Vimos pelo presente termo, formalizar adesão de V. As. junto ao Cartão Guadalupe Saúde a partir da data abaixo citada.</strong></p>
           <p>Solicitamos observar as seguintes disposições sobre o cartão:</p>
         </div>
 
@@ -147,8 +147,8 @@ const ContratoContent = () => {
             <div class="clause-title">Objetivo e Localidades</div>
           </div>
           <div class="clause-content">
-            <p>O objetivo do cartão é prestar serviços em análises clínicas com a realização de exames laboratoriais com descontos especiais e está restrita ao Laboratório Lasac em <strong>Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra Nova/PE, Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE</strong>.</p>
-            <p>Os laboratórios LASAC de <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já estão com valores promocionais nos exames, mas oferecem desconto adicional aos pacientes conveniados ao Cartão + Saúde LASAC.</p>
+            <p>O objetivo do cartão é prestar serviços em análises clínicas com a realização de exames laboratoriais com descontos especiais e está restrita ao Laboratório Guadalupe Saúde em <strong>Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra Nova/PE, Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE</strong>.</p>
+            <p>Os laboratórios Guadalupe Saúde de <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já estão com valores promocionais nos exames, mas oferecem desconto adicional aos pacientes conveniados ao Cartão Guadalupe Saúde.</p>
           </div>
         </div>
 
@@ -158,7 +158,7 @@ const ContratoContent = () => {
             <div class="clause-title">Descontos e Pagamento</div>
           </div>
           <div class="clause-content">
-            <p>Os exames realizados no laboratório Lasac e suas unidades serão cobrados diretamente do cliente com descontos de <strong>50% a 60%</strong> nos pagamentos à vista, tendo como referência a <strong>tabela AMB 92 com CH vigente</strong>.</p>
+            <p>Os exames realizados no Laboratório Guadalupe Saúde e suas unidades serão cobrados diretamente do cliente com descontos de <strong>50% a 60%</strong> nos pagamentos à vista, tendo como referência a <strong>tabela AMB 92 com CH vigente</strong>.</p>
           </div>
         </div>
 
@@ -178,7 +178,7 @@ const ContratoContent = () => {
             <div class="clause-title">Apresentação Obrigatória</div>
           </div>
           <div class="clause-content">
-            <p>O usuário do cartão só terá as vantagens acima citadas mediante a apresentação do <strong>CARTÃO MAIS SAÚDE LASAC</strong>, sendo ele obrigatório.</p>
+            <p>O usuário do cartão só terá as vantagens acima citadas mediante a apresentação do <strong>CARTÃO GUADALUPE SAÚDE</strong>, sendo ele obrigatório.</p>
           </div>
         </div>
 
@@ -193,7 +193,7 @@ const ContratoContent = () => {
         </div>
 
         <div class="footer">
-          <p><strong>© ${new Date().getFullYear()} Laboratório Lasac. Todos os direitos reservados.</strong></p>
+          <p><strong>© ${new Date().getFullYear()} Guadalupe Saúde. Todos os direitos reservados.</strong></p>
           <p>Este documento é válido e possui valor legal para fins de adesão ao convênio.</p>
         </div>
       </body>
@@ -214,26 +214,28 @@ const ContratoContent = () => {
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-20 w-32 items-center justify-center">
-            <img
+            <Image
               src="/logo03.svg"
-              alt="Mais Saúde Lasac Logo"
+              alt="Guadalupe Saúde Logo"
               className="h-full w-full rounded-sm object-contain"
+              width={100}
+              height={100}
             />
           </div>
-          <CardTitle className="text-2xl font-bold text-emerald-900">
+          <CardTitle className="text-2xl font-bold text-sky-900">
             TERMO DE CONVÊNIO
           </CardTitle>
-          <div className="mt-2 text-lg font-semibold text-emerald-700">
-            CARTÃO MAIS SAÚDE LASAC
+          <div className="mt-2 text-lg font-semibold text-sky-700">
+            CARTÃO GUADALUPE SAÚDE
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6 text-gray-800">
           {/* Introdução */}
-          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+          <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
             <p className="text-justify leading-relaxed">
               Vimos pelo presente termo, formalizar adesão de V. As. junto ao{" "}
-              <strong>Cartão Mais Saúde Lasac</strong> a partir da data abaixo
+              <strong>Cartão Guadalupe Saúde</strong> a partir da data abaixo
               citada.
             </p>
             <p className="mt-3 text-justify leading-relaxed">
@@ -246,12 +248,10 @@ const ContratoContent = () => {
             {/* Cláusula 1 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   1
                 </div>
-                <h3 className="font-semibold text-emerald-900">
-                  Taxa e Validade
-                </h3>
+                <h3 className="font-semibold text-sky-900">Taxa e Validade</h3>
               </div>
               <p className="text-justify leading-relaxed">
                 Os usuários pagarão uma taxa única de manutenção para aquisição
@@ -262,17 +262,17 @@ const ContratoContent = () => {
             {/* Cláusula 2 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   2
                 </div>
-                <h3 className="font-semibold text-emerald-900">
+                <h3 className="font-semibold text-sky-900">
                   Objetivo e Localidades
                 </h3>
               </div>
               <p className="mb-3 text-justify leading-relaxed">
                 O objetivo do cartão é prestar serviços em análises clínicas com
                 a realização de exames laboratoriais com descontos especiais e
-                está restrita ao Laboratório Lasac em{" "}
+                está restrita ao Laboratório Guadalupe Saúde em{" "}
                 <strong>
                   Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra
                   Nova/PE, Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE
@@ -280,26 +280,26 @@ const ContratoContent = () => {
                 .
               </p>
               <p className="text-justify leading-relaxed">
-                Os laboratórios LASAC de{" "}
+                Os laboratórios Guadalupe Saúde de{" "}
                 <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já estão
                 com valores promocionais nos exames, mas oferecem desconto
-                adicional aos pacientes conveniados ao Cartão + Saúde LASAC.
+                adicional aos pacientes conveniados ao Cartão Guadalupe Saúde.
               </p>
             </div>
 
             {/* Cláusula 3 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   3
                 </div>
-                <h3 className="font-semibold text-emerald-900">
+                <h3 className="font-semibold text-sky-900">
                   Descontos e Pagamento
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                Os exames realizados no laboratório Lasac e suas unidades serão
-                cobrados diretamente do cliente com descontos de{" "}
+                Os exames realizados no Laboratório Guadalupe Saúde e suas
+                unidades serão cobrados diretamente do cliente com descontos de{" "}
                 <strong>50% a 60%</strong> nos pagamentos à vista, tendo como
                 referência a <strong>tabela AMB 92 com CH vigente</strong>.
               </p>
@@ -308,10 +308,10 @@ const ContratoContent = () => {
             {/* Cláusula 4 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   4
                 </div>
-                <h3 className="font-semibold text-emerald-900">
+                <h3 className="font-semibold text-sky-900">
                   Serviços Adicionais
                 </h3>
               </div>
@@ -331,27 +331,27 @@ const ContratoContent = () => {
             {/* Cláusula 5 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   5
                 </div>
-                <h3 className="font-semibold text-emerald-900">
+                <h3 className="font-semibold text-sky-900">
                   Apresentação Obrigatória
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
                 O usuário do cartão só terá as vantagens acima citadas mediante
-                a apresentação do <strong>CARTÃO MAIS SAÚDE LASAC</strong>,
-                sendo ele obrigatório.
+                a apresentação do <strong>CARTÃO GUADALUPE SAÚDE</strong>, sendo
+                ele obrigatório.
               </p>
             </div>
 
             {/* Cláusula 6 */}
             <div className="rounded-lg border border-gray-200 p-4">
               <div className="mb-2 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   6
                 </div>
-                <h3 className="font-semibold text-emerald-900">
+                <h3 className="font-semibold text-sky-900">
                   Prazo de Validade
                 </h3>
               </div>
@@ -366,10 +366,10 @@ const ContratoContent = () => {
           {/* Rodapé */}
           <div className="border-t border-gray-200 pt-6 text-center">
             <div className="mb-4">
-              <FileText className="mx-auto h-8 w-8 text-emerald-600" />
+              <FileText className="mx-auto h-8 w-8 text-sky-600" />
             </div>
             <p className="text-sm text-gray-600">
-              © {new Date().getFullYear()} Laboratório Lasac. Todos os direitos
+              © {new Date().getFullYear()} Guadalupe Saúde. Todos os direitos
               reservados.
             </p>
             <p className="mt-2 text-xs text-gray-500">
@@ -409,8 +409,8 @@ export default function ContratoDialog({
       <DialogTrigger asChild>{trigger || defaultTrigger}</DialogTrigger>
       <DialogContent className="max-h-[90vh] max-w-5xl">
         <DialogHeader>
-          <DialogTitle className="p-2 text-center font-bold">
-            Termo de Convênio - Cartão Mais Saúde LASAC
+          <DialogTitle className="p-2 text-center font-bold text-sky-900">
+            Termo de Convênio - Cartão Guadalupe Saúde
           </DialogTitle>
         </DialogHeader>
         <ContratoContent />
