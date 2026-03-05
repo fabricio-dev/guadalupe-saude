@@ -257,7 +257,7 @@ export const AdminContent = () => {
           <Button
             onClick={handleChangeUserRole}
             disabled={isLoading || !userEmail}
-            className="w-full"
+            className="w-full bg-sky-600/90 hover:bg-sky-700"
           >
             {isLoading ? "Alterando..." : "Alterar Role"}
           </Button>

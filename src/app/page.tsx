@@ -1012,7 +1012,7 @@ export default function Home() {
                               <div className="relative z-10 flex h-full flex-col justify-between p-2">
                                 <div className="text-center">
                                   <div className="inline-block rounded-lg px-2 py-1 md:px-4 md:py-2">
-                                    <h3 className="rounded-lg bg-white p-2 pb-4 text-lg font-bold text-gray-800 md:pt-4 md:text-xl">
+                                    <h3 className="rounded-lg bg-white/90 p-2 pb-4 text-lg font-bold text-gray-800 md:pt-4 md:text-xl">
                                       {conv.nome}
                                     </h3>
                                   </div>

@@ -15,7 +15,7 @@ const AddSellerButton = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full bg-emerald-600 hover:bg-emerald-900 sm:w-auto">
+        <Button className="w-full bg-sky-600/90 hover:bg-sky-700 sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           <span className="hidden sm:inline">Novo Vendedor</span>
           <span className="sm:hidden">Novo</span>

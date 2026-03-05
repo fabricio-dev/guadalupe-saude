@@ -378,10 +378,13 @@ export default function ConvenioVendedorPage() {
               </div>
             )}
             <p className="text-white">
-              Preencha seus dados para solicitar seu convênio. Ao finalizar seu
-              cadastro, faça o pagamento atraves do PIX e envie o comprovante
-              para o vendedor ou no numero do whatsapp da empresa{" "}
-              {process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA}.
+              Preencha os dados para solicitar o convênio. Ao escolher pagar com
+              cartão, você sera redirecionado para uma página segura de
+              pagamento. Apos concluir o pagamento, entre em contato para
+              agendar a retirada do cartão. Ao escolher pagar com PIX, você
+              receberá um QR Code para pagamento, apos concluir, envie o
+              comprovante para o vendedor ou no numero de whatsapp da empresa:{" "}
+              {process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA || ""}.
             </p>
           </div>
 

@@ -68,10 +68,8 @@ const UpsertClinicForm = ({ clinic, onSuccess }: UpsertClinicFormProps) => {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle className="text-amber-950">
-          {clinic ? clinic.name : "Adicionar Unidade"}
-        </DialogTitle>
-        <DialogDescription className="text-amber-800">
+        <DialogTitle>{clinic ? clinic.name : "Adicionar Unidade"}</DialogTitle>
+        <DialogDescription className="text-muted-foreground">
           {clinic
             ? "Edite as informações da unidade"
             : "Adicione uma nova unidade para gerenciar pacientes e convênios."}
@@ -84,9 +82,7 @@ const UpsertClinicForm = ({ clinic, onSuccess }: UpsertClinicFormProps) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">
-                  Nome da Unidade
-                </FormLabel>
+                <FormLabel className="text-sky-900">Nome da Unidade</FormLabel>
                 <FormControl>
                   <Input placeholder="Digite o nome da unidade" {...field} />
                 </FormControl>
@@ -99,7 +95,7 @@ const UpsertClinicForm = ({ clinic, onSuccess }: UpsertClinicFormProps) => {
             <Button
               type="submit"
               disabled={upsertClinicAction.isExecuting}
-              className="bg-emerald-600 hover:bg-emerald-900"
+              className="bg-sky-600/90 hover:bg-sky-700"
             >
               {upsertClinicAction.isExecuting
                 ? "Salvando..."

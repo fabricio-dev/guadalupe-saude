@@ -153,10 +153,8 @@ const UpsertSellerForm = ({
   return (
     <DialogContent className="max-h-[88vh] max-w-4xl overflow-x-hidden overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-amber-950">
-          {seller ? seller.name : "Adicionar Vendedor"}
-        </DialogTitle>
-        <DialogDescription className="space-y-2 text-amber-800">
+        <DialogTitle>{seller ? seller.name : "Adicionar Vendedor"}</DialogTitle>
+        <DialogDescription className="text-muted-foreground space-y-2">
           {seller
             ? "Edite as informacoes do vendedor"
             : "Adicione um novo vendedor."}
@@ -169,7 +167,7 @@ const UpsertSellerForm = ({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">Nome</FormLabel>
+                <FormLabel className="text-sky-900">Nome</FormLabel>
                 <FormControl>
                   <Input placeholder="Digite o nome completo" {...field} />
                 </FormControl>
@@ -182,7 +180,7 @@ const UpsertSellerForm = ({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">Email</FormLabel>
+                <FormLabel className="text-sky-900">Email</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -200,7 +198,7 @@ const UpsertSellerForm = ({
             name="cpfNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">CPF</FormLabel>
+                <FormLabel className="text-sky-900">CPF</FormLabel>
                 <FormControl>
                   <Input placeholder="Digite o CPF" {...field} />
                 </FormControl>
@@ -213,7 +211,7 @@ const UpsertSellerForm = ({
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">Telefone</FormLabel>
+                <FormLabel className="text-sky-900">Telefone</FormLabel>
                 <FormControl>
                   <Input placeholder="Digite o telefone" {...field} />
                 </FormControl>
@@ -226,7 +224,7 @@ const UpsertSellerForm = ({
             name="percentage"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">Porcentagem</FormLabel>
+                <FormLabel className="text-sky-900">Porcentagem</FormLabel>
                 <FormControl>
                   <Input type="number" {...field} />
                 </FormControl>
@@ -239,7 +237,7 @@ const UpsertSellerForm = ({
             name="pixKeyType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">
+                <FormLabel className="text-sky-900">
                   Tipo de Chave PIX
                 </FormLabel>
                 <FormControl>
@@ -269,7 +267,7 @@ const UpsertSellerForm = ({
             name="pixKey"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">Chave PIX</FormLabel>
+                <FormLabel className="text-sky-900">Chave PIX</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -286,7 +284,7 @@ const UpsertSellerForm = ({
             name="clinicId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">
+                <FormLabel className="text-sky-900">
                   Unidade do Vendedor
                 </FormLabel>
                 <Select
@@ -348,7 +346,7 @@ const UpsertSellerForm = ({
             )}
             <Button
               type="submit"
-              className="bg-emerald-600 hover:bg-emerald-900"
+              className="bg-sky-600/90 hover:bg-sky-700"
               disabled={upsertSellerAction.isPending}
             >
               {upsertSellerAction.isPending

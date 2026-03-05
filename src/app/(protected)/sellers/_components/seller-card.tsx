@@ -62,7 +62,9 @@ const SellerCard = ({ seller }: SellerCardProps) => {
       <CardHeader>
         <div className="flex items-center gap-2">
           <Avatar className="h-10 w-10">
-            <AvatarFallback>{sellerInitials}</AvatarFallback>
+            <AvatarFallback className="text-md bg-sky-50 font-medium text-sky-600">
+              {sellerInitials}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h3 className="text-sm font-medium">{seller.name}</h3>
@@ -74,7 +76,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
       <CardContent className="flex flex-col gap-2">
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <Building2 className="mr-2 h-4 w-4" />
+            <Building2 className="mr-2 h-4 w-4 text-sky-600" />
             Unidade:
           </div>
           <span className="font-semibold">
@@ -83,21 +85,21 @@ const SellerCard = ({ seller }: SellerCardProps) => {
         </Badge>
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <Users className="mr-2 h-4 w-4" />
+            <Users className="mr-2 h-4 w-4 text-sky-600" />
             Convênios totais:
           </div>
           <span className="font-semibold">{seller.patientsCount}</span>
         </Badge>
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <Users className="mr-2 h-4 w-4" />
+            <Users className="mr-2 h-4 w-4 text-sky-600" />
             Convênios de empresas:
           </div>
           <span className="font-semibold">{seller.enterpriseCount}</span>
         </Badge>
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <DollarSign className="mr-2 h-4 w-4" />
+            <DollarSign className="mr-2 h-4 w-4 text-sky-600" />
             Faturamento:
           </div>
           <span className="font-semibold">
@@ -107,7 +109,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
 
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <Percent className="mr-2 h-4 w-4" />
+            <Percent className="mr-2 h-4 w-4 text-sky-600" />
             Comissão:
           </div>
           <span className="font-semibold">
@@ -116,14 +118,14 @@ const SellerCard = ({ seller }: SellerCardProps) => {
         </Badge>
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <KeyRound className="mr-2 h-4 w-4" />
+            <KeyRound className="mr-2 h-4 w-4 text-sky-600" />
             Tipo de Chave PIX:
           </div>
           <span className="font-semibold">{seller.pixKeyType}</span>
         </Badge>
         <Badge variant="outline" className="justify-between">
           <div className="flex items-center">
-            <KeyRound className="mr-2 h-4 w-4" />
+            <KeyRound className="mr-2 h-4 w-4 text-sky-600" />
             Chave PIX:
           </div>
           <span className="font-semibold">{seller.pixKey}</span>
@@ -136,7 +138,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
           onOpenChange={setIsUpsertSellerFormOpen}
         >
           <DialogTrigger asChild>
-            <Button className="flex-1 bg-red-800 hover:bg-red-900">
+            <Button className="flex-1 bg-sky-600/90 hover:bg-sky-700">
               <PencilIcon className="mr-1" />
               Editar
             </Button>

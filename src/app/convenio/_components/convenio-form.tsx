@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
@@ -300,15 +300,61 @@ export function ConvenioForm() {
     fetchExternalSeller(selectedClinicId);
   }, [selectedClinicId, form]);
 
+  const phoneNumber = process.env.NEXT_PUBLIC_TELEFONE_PRINCIPAL_EMPRESA || "";
+  const whatsappNumber = phoneNumber.replace(/\D/g, "");
+  const whatsappUrl = whatsappNumber
+    ? `https://wa.me/${whatsappNumber}`
+    : undefined;
+
+  const handleCopyPhone = async () => {
+    if (!phoneNumber) return;
+
+    try {
+      await navigator.clipboard.writeText(whatsappNumber || phoneNumber);
+      toast.success("Número copiado para a área de transferência.");
+    } catch {
+      toast.error("Não foi possível copiar o número.");
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl py-8">
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-3xl font-bold text-white">
           Seja um Conveniado
         </h1>
-        <p className="text-white">
-          Preencha seus dados para solicitar seu convênio. Nossa equipe entrará
-          em contato para finalizar o processo.
+        <p className="items-center gap-2 text-white md:flex-row md:justify-center md:gap-3">
+          <span>
+            Preencha os dados para solicitar o convênio. Ao escolher pagar com
+            cartão, você sera redirecionado para uma página segura de pagamento.
+            Apos concluir o pagamento, entre em contato para agendar a retirada
+            do cartão. Ao escolher pagar com PIX, você receberá um QR Code para
+            pagamento, apos concluir, envie o comprovante por WhatsApp para o
+            numero:{" "}
+            {phoneNumber && whatsappUrl && (
+              <>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-green-400 decoration-dotted underline-offset-4 hover:text-green-300"
+                >
+                  {phoneNumber}
+                </a>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="ml-2 border-sky-500 bg-sky-600 text-xs text-white hover:bg-sky-700 hover:text-white"
+                  onClick={handleCopyPhone}
+                >
+                  <Copy className="mr-1 h-4 w-4" />
+                  Copiar
+                </Button>
+              </>
+            )}
+          </span>
         </p>
       </div>
 

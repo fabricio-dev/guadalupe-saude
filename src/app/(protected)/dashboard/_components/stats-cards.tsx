@@ -51,9 +51,9 @@ const StatsCards = ({
           <Card key={stat.title} className="gap-4">
             <CardHeader className="flex flex-row items-center gap-2 space-y-0 pb-2">
               <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
-                <Icon className="h-4 w-4 text-red-800" />
+                <Icon className="h-4 w-4 text-sky-600" />
               </div>
-              <CardTitle className="text-muted-foreground text-sm font-medium">
+              <CardTitle className="text-muted-foreground text-md font-medium">
                 {stat.title}
               </CardTitle>
             </CardHeader>

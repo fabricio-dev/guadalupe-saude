@@ -1,6 +1,7 @@
 "use client";
 
 import dayjs from "dayjs";
+import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const ClinicCard = ({ clinic }: ClinicCardProps) => {
   return (
     <Card className="transition-shadow hover:shadow-md">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg text-amber-950">{clinic.name}</CardTitle>
+        <CardTitle className="text-lg text-sky-900">{clinic.name}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="text-sm text-gray-600">
@@ -44,7 +45,7 @@ const ClinicCard = ({ clinic }: ClinicCardProps) => {
             className="w-full"
             onClick={() => setIsDialogOpen(true)}
           >
-            Editar unidade
+            <PencilIcon className="mr-2 h-4 w-4" /> Editar unidade
           </Button>
         </div>
       </CardContent>
