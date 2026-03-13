@@ -27,6 +27,7 @@ interface PatientActivation {
   expirationDate: Date | null;
   sellerName: string | null;
   clinicName: string | null;
+  paymentType: string | null;
 }
 
 interface PatientsActivationsTableProps {
@@ -122,6 +123,7 @@ const PatientsActivationsTable = ({
                 <TableHead>Data de Ativação</TableHead>
                 <TableHead>Data de Renovação</TableHead>
                 <TableHead>Data de Vencimento</TableHead>
+                <TableHead>Tipo de Pagamento</TableHead>
                 <TableHead>Vendedor</TableHead>
                 <TableHead>Unidade</TableHead>
               </TableRow>
@@ -136,6 +138,7 @@ const PatientsActivationsTable = ({
                   <TableCell>{formatDate(patient.activeAt)}</TableCell>
                   <TableCell>{formatDate(patient.reactivatedAt)}</TableCell>
                   <TableCell>{formatDate(patient.expirationDate)}</TableCell>
+                  <TableCell>{patient.paymentType || "-"}</TableCell>
                   <TableCell>{patient.sellerName || "-"}</TableCell>
                   <TableCell>{patient.clinicName || "-"}</TableCell>
                 </TableRow>

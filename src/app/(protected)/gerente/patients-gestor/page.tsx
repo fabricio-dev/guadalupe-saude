@@ -35,7 +35,7 @@ import { patientsTable, sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import GenerateLinkButton from "../../_components/generate-link-button";
-import AddPatientButton from "./_components/add-patient-button";
+import AddPatientButton from "../../vendedor/patients-seller/_components/add-patient-button";
 import FiltersBar from "./_components/filters-bar";
 import PatientsTable from "./_components/patients-table";
 import SearchPatients from "./_components/search-patients";

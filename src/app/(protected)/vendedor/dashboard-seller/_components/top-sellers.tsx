@@ -55,10 +55,10 @@ export default function TopSellers({
                       <div
                         className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                           isCurrentSeller
-                            ? "bg-gray-100 text-gray-600"
+                            ? "bg-yellow-100 text-yellow-800"
                             : index < 3
                               ? "bg-yellow-100 text-yellow-800"
-                              : "bg-gray-100 text-gray-600"
+                              : "bg-sky-50 text-sky-600"
                         }`}
                       >
                         {index < 3 ? (
@@ -71,8 +71,8 @@ export default function TopSellers({
                         <AvatarFallback
                           className={`text-sm font-medium ${
                             isCurrentSeller
-                              ? "bg-orange-600/30 text-red-800"
-                              : "bg-gray-100 text-red-800"
+                              ? "bg-sky-600/30 text-sky-800"
+                              : "bg-sky-50 text-sky-600"
                           }`}
                         >
                           {seller.name
@@ -85,7 +85,7 @@ export default function TopSellers({
                     </div>
                     <div>
                       <h3
-                        className={`text-sm ${isCurrentSeller ? "font-semibold text-red-900" : ""}`}
+                        className={`text-sm ${isCurrentSeller ? "font-semibold text-sky-600" : ""}`}
                       >
                         {seller.name}
                       </h3>
@@ -98,7 +98,7 @@ export default function TopSellers({
                     <span
                       className={`text-sm font-medium ${
                         isCurrentSeller
-                          ? "text-red-700"
+                          ? "text-sky-700"
                           : "text-muted-foreground"
                       }`}
                     >

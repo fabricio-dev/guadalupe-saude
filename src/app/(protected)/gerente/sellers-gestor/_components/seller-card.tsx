@@ -62,7 +62,9 @@ const SellerCard = ({ seller }: SellerCardProps) => {
       <CardHeader>
         <div className="flex items-center gap-2">
           <Avatar className="h-10 w-10">
-            <AvatarFallback>{sellerInitials}</AvatarFallback>
+            <AvatarFallback className="bg-sky-50 text-sm font-medium text-sky-600">
+              {sellerInitials}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h3 className="text-sm font-medium">{seller.name}</h3>
@@ -136,7 +138,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
           onOpenChange={setIsUpsertSellerFormOpen}
         >
           <DialogTrigger asChild>
-            <Button className="flex-1 bg-red-800 hover:bg-red-900">
+            <Button className="flex-1 bg-sky-600 hover:bg-sky-700">
               <PencilIcon className="mr-1" />
               Editar
             </Button>

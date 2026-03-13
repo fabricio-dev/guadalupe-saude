@@ -28,11 +28,23 @@ export function RenewalLinkDialog({ patientId, isAllowed, trigger }: Props) {
 
   const action = useAction(generateStripeRenewalLink, {
     onSuccess: ({ data }) => {
-      if (!data?.url) return toast.error("Stripe não retornou o link.");
+      if (!data) {
+        return toast.error("Erro ao gerar link de renovação.");
+      }
+
+      if ("error" in data && data.error) {
+        return toast.error(data.error);
+      }
+
+      if (!("url" in data) || !data.url) {
+        return toast.error("Stripe não retornou o link.");
+      }
+
       setUrl(data.url);
       setOpen(true);
     },
-    onError: (e) => toast.error(e.error.serverError || "Erro ao gerar link"),
+    onError: (e) =>
+      toast.error(e.error.serverError || "Erro inesperado ao gerar link"),
   });
 
   async function copy() {

@@ -23,7 +23,7 @@ const chartConfig = {
   },
   renovados: {
     label: "Renovados",
-    color: "#EE7177",
+    color: "#419cd3",
   },
 } satisfies ChartConfig;
 
@@ -81,7 +81,7 @@ export function ConveniosChart({ dailyConveniosData }: ConveniosChartProps) {
               content={
                 <ChartTooltipContent
                   formatter={(value, name) => {
-                    const color = name === "renovados" ? "#EE7177" : "#10B981";
+                    const color = name === "renovados" ? "#419cd3" : "#10B981";
                     const label = name === "renovados" ? "Renovados" : "Novos";
                     return (
                       <>

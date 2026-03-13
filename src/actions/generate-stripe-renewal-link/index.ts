@@ -61,31 +61,23 @@ export const generateStripeRenewalLink = actionClient
       .where(eq(sellersTable.email, authSession.user.email))
       .limit(1);
 
-    // se nao for admin e o vendedor do convenio nao for o mesmo do usuario logado, retorna erro e nao gera link
-    // if (
-    //   authSession.user.role !== "admin" &&
-    //   seller[0].id !== patient.sellerId
-    // ) {
-    //   return {
-    //     error:
-    //       "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outro vendedor",
-    //   };
-    // }
-    if (
-      authSession.user.role !== "admin" &&
-      authSession.user.role !== "gestor"
-    ) {
-      if (patient.sellerId !== seller[0].id) {
+    // se nao for admin e o vendedor/unidade do convênio não forem compatíveis com o usuário logado, retorna erro de negócio
+    if (authSession.user.role !== "admin") {
+      if (seller[0] && seller[0].clinicId !== patient.clinicId) {
+        return {
+          error:
+            "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outra unidade",
+        };
+      } else if (
+        seller[0] &&
+        seller[0].id !== patient.sellerId &&
+        authSession.user.role !== "gestor"
+      ) {
         return {
           error:
             "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outro vendedor",
         };
       }
-    } else if (seller[0].clinicId !== patient.clinicId) {
-      return {
-        error:
-          "Você não tem permissão para gerar um link de renovação para este convênio, pois ele pertence a outra unidade",
-      };
     }
 
     //________________________________________________________________
@@ -101,9 +93,9 @@ export const generateStripeRenewalLink = actionClient
 
     // regra do seu pedido: só gera link se estiver vencido
     if (!isExpired && !isPending) {
-      throw new Error(
-        "Este convênio ainda não está vencido ou pendente de renovação.",
-      );
+      return {
+        error: "Este convênio ainda não está vencido ou pendente de renovação.",
+      };
     }
 
     const session = await stripe.checkout.sessions.create({

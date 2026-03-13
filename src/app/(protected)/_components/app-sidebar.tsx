@@ -173,7 +173,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url}
+                    className="hover:bg-sky-100 hover:text-sky-900"
+                  >
                     <Link href={item.url} onClick={handleMenuItemClick}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -185,14 +189,17 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-sky-50">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger
+                asChild
+                className="bg-sky-50 hover:bg-sky-100"
+              >
                 <SidebarMenuButton size="lg">
                   <Avatar>
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-sky-200">
                       {session.data?.user.name
                         .split(" ")
                         .map((n) => n[0])

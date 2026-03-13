@@ -35,7 +35,7 @@ export default function TopSellers({ sellers }: TopSellersProps) {
               >
                 <div className="flex items-center gap-4">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-gray-100 text-sm font-medium text-red-800">
+                    <AvatarFallback className="bg-sky-50 text-sm font-medium text-sky-600">
                       {seller.name
                         .split(" ")
                         .map((n) => n[0])
@@ -67,4 +67,3 @@ export default function TopSellers({ sellers }: TopSellersProps) {
     </Card>
   );
 }
-

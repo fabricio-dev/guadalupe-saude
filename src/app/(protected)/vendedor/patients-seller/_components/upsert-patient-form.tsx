@@ -324,7 +324,6 @@ const UpsertPatientForm = ({
     [form],
   );
 
-
   // Carregar dados do vendedor e clínica
   useEffect(() => {
     if (isOpen) {
@@ -424,10 +423,10 @@ const UpsertPatientForm = ({
   return (
     <DialogContent className="max-h-[88vh] max-w-4xl overflow-x-hidden overflow-y-auto">
       <DialogHeader>
-        <DialogTitle className="text-amber-950">
+        <DialogTitle>
           {patient ? patient.name : "Adicionar Paciente"}
         </DialogTitle>
-        <DialogDescription className="text-amber-800">
+        <DialogDescription className="text-muted-foreground">
           {patient
             ? `Edite as informações do paciente${
                 patient.updatedAt
@@ -445,7 +444,7 @@ const UpsertPatientForm = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Nome Titular</FormLabel>
+                  <FormLabel className="text-sky-900">Nome Titular</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite o nome completo" {...field} />
                   </FormControl>
@@ -459,7 +458,7 @@ const UpsertPatientForm = ({
               name="birthDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     Data de Nascimento
                   </FormLabel>
                   <FormControl>
@@ -475,7 +474,7 @@ const UpsertPatientForm = ({
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Telefone</FormLabel>
+                  <FormLabel className="text-sky-900">Telefone</FormLabel>
                   <FormControl>
                     <PatternFormat
                       format="(##) #####-####"
@@ -509,7 +508,7 @@ const UpsertPatientForm = ({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel className="text-sm font-normal text-amber-950">
+                    <FormLabel className="text-sm font-normal text-sky-900">
                       Autorização para recebimento de avisos, lembretes e
                       comunicações sobre o meu cartão LASAC por WhatsApp.
                     </FormLabel>
@@ -526,7 +525,7 @@ const UpsertPatientForm = ({
               name="rgNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">RG</FormLabel>
+                  <FormLabel className="text-sky-900">RG</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Digite apenas números"
@@ -547,7 +546,7 @@ const UpsertPatientForm = ({
               name="cpfNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     CPF{" "}
                     {checkingCPF && (
                       <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -598,7 +597,7 @@ const UpsertPatientForm = ({
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Endereço</FormLabel>
+                  <FormLabel className="text-sky-900">Endereço</FormLabel>
                   <FormControl>
                     <Input placeholder="Rua, Avenida, número" {...field} />
                   </FormControl>
@@ -612,7 +611,7 @@ const UpsertPatientForm = ({
               name="homeNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Bairro</FormLabel>
+                  <FormLabel className="text-sky-900">Bairro</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite o nome do bairro" {...field} />
                   </FormControl>
@@ -626,7 +625,7 @@ const UpsertPatientForm = ({
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Cidade</FormLabel>
+                  <FormLabel className="text-sky-900">Cidade</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite o nome da cidade" {...field} />
                   </FormControl>
@@ -640,7 +639,7 @@ const UpsertPatientForm = ({
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     UF{" "}
                     {loadingState && (
                       <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -680,7 +679,7 @@ const UpsertPatientForm = ({
               name="cardType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     Tipo de Cartão{" "}
                     {loadingCardType && (
                       <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -717,7 +716,7 @@ const UpsertPatientForm = ({
               name="Enterprise"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Empresa</FormLabel>
+                  <FormLabel className="text-sky-900">Empresa</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Nome da empresa"
@@ -735,7 +734,7 @@ const UpsertPatientForm = ({
               name="numberCards"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     Quantidade de Cartões
                   </FormLabel>
                   <FormControl>
@@ -796,7 +795,7 @@ const UpsertPatientForm = ({
               name="sellerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">
+                  <FormLabel className="text-sky-900">
                     Vendedor{" "}
                     {loadingSeller && (
                       <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -854,7 +853,7 @@ const UpsertPatientForm = ({
             name="paymentType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-amber-950">
+                <FormLabel className="text-sky-900">
                   Tipo de Pagamento{" "}
                   {loadingCardPaymentType && (
                     <Loader2 className="ml-2 inline h-4 w-4 animate-spin" />
@@ -895,7 +894,7 @@ const UpsertPatientForm = ({
               name="dependents1"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-amber-950">Dependente 1</FormLabel>
+                  <FormLabel className="text-sky-900">Dependente 1</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Nome do dependente (opcional)"
@@ -912,7 +911,7 @@ const UpsertPatientForm = ({
               name="dependents2"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Dependente 2
                   </FormLabel>
                   <FormControl>
@@ -931,7 +930,7 @@ const UpsertPatientForm = ({
               name="dependents3"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Dependente 3
                   </FormLabel>
                   <FormControl>
@@ -950,7 +949,7 @@ const UpsertPatientForm = ({
               name="dependents4"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Dependente 4
                   </FormLabel>
                   <FormControl>
@@ -969,7 +968,7 @@ const UpsertPatientForm = ({
               name="dependents5"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Dependente 5
                   </FormLabel>
                   <FormControl>
@@ -987,7 +986,7 @@ const UpsertPatientForm = ({
               name="dependents6"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Dependente 6
                   </FormLabel>
                   <FormControl>
@@ -1005,7 +1004,7 @@ const UpsertPatientForm = ({
               name="observation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="mt-1 text-amber-950">
+                  <FormLabel className="mt-1 text-sky-900">
                     Observações
                   </FormLabel>
                   <FormControl>
@@ -1028,7 +1027,7 @@ const UpsertPatientForm = ({
                 upsertPatientAction.isExecuting ||
                 (!!patient && !form.formState.isDirty)
               }
-              className="mt-1 w-full bg-emerald-600 hover:bg-emerald-900"
+              className="mt-1 w-full bg-sky-600 hover:bg-sky-700"
             >
               {upsertPatientAction.isExecuting
                 ? "Salvando..."
