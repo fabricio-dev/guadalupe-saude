@@ -42,10 +42,11 @@ const SellerCard = ({ seller }: SellerCardProps) => {
     .map((name) => name[0])
     .join("");
 
-  // Calcular valor dos convênios vendidos (pacientes individual * R$ 100,00) + (pacientes de empresas * R$ 90,00)
+  // Calcular valor dos convênios vendidos (pacientes individual * R$ valor do convenio pessoal) + (pacientes de empresas * R$ valor do convenio empresarial)
   const conveniosValue =
-    (seller.patientsCount - seller.enterpriseCount) * 100 +
-    seller.enterpriseCount * 90;
+    (seller.patientsCount - seller.enterpriseCount) *
+      Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+    seller.enterpriseCount * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
 
   // Formatar valor como moeda brasileira
   const formatCurrency = (value: number): string => {

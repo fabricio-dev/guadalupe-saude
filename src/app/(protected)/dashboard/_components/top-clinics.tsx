@@ -31,7 +31,7 @@ export default function TopClinics({ topClinics }: TopClinicsProps) {
         {/* units List */}
         <div className="space-y-6">
           {topClinics.map((clinic) => {
-            // Porcentagem de ocupação da especialidade baseando-se no maior número de pacientes
+            // Porcentagem de ocupação da clinica baseando-se no maior número de pacientes
             const progressValue =
               ((clinic.patients + clinic.patientsRenovated) / maxPatients) *
               100;

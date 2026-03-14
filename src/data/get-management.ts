@@ -194,8 +194,10 @@ const getFaturamentoMensal = async (
       (totalEnterpriseMonth?.total || 0) +
       (totalEnterpriseRenovatedMonth?.total || 0);
     const faturamentoMes =
-      (totalPatientsMonth_total - totalEnterpriseMonth_total) * 100 +
-      totalEnterpriseMonth_total * 90;
+      (totalPatientsMonth_total - totalEnterpriseMonth_total) *
+        Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+      totalEnterpriseMonth_total *
+        Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
 
     // Mapeamento de meses para português
     const monthNames = {
@@ -451,8 +453,9 @@ export const getManagement = async ({
 
     // Calcular faturamento total usando a mesma lógica do dashboard
     const faturamentoTotal =
-      (totalPatientsTotal - totalEnterpriseTotal) * 100 +
-      totalEnterpriseTotal * 90;
+      (totalPatientsTotal - totalEnterpriseTotal) *
+        Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+      totalEnterpriseTotal * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
 
     // Calcular faturamento mensal
     const faturamentoMensal = await getFaturamentoMensal(

@@ -27,6 +27,7 @@ interface PatientActivation {
   expirationDate: Date | null;
   sellerName: string | null;
   clinicName: string | null;
+  paymentType: string | null;
 }
 
 interface RelatorioUnidadesProps {

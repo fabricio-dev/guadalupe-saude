@@ -202,7 +202,9 @@ export async function getVendedores({
 
     // Calcular faturamento usando a mesma lógica do get-management
     const faturamentoTotal =
-      (totalVendas - totalEnterpriseTotal) * 100 + totalEnterpriseTotal * 90;
+      (totalVendas - totalEnterpriseTotal) *
+        Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+      totalEnterpriseTotal * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
 
     const ticketMedio = totalVendas > 0 ? faturamentoTotal / totalVendas : 0;
 
@@ -239,7 +241,10 @@ export async function getVendedores({
 
       // Calcular faturamento igual ao faturamento total
       const faturamento =
-        conveniosIndividuais * 100 + conveniosEmpresariais * 90;
+        conveniosIndividuais *
+          Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+        conveniosEmpresariais *
+          Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
 
       // Meta mockada (pode ser implementada no banco depois)
       const meta = 100000; // Meta padrão
@@ -333,8 +338,11 @@ function generateMonthlyRevenue(
       monthlyData[monthKey] = 0;
     }
 
-    // Usar a mesma lógica de faturamento dos outros cálculos (sem multiplicar por numberCards)
-    const valorBase = patient.cardType === "enterprise" ? 90 : 100;
+    // Usar a mesma lógica de faturamento dos outros cálculos (sem multiplicar por numberCards) faturaento grafico vendedor individualmente
+    const valorBase =
+      patient.cardType === "enterprise"
+        ? Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE)
+        : Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE);
     monthlyData[monthKey] += valorBase;
   });
 

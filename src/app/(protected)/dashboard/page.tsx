@@ -95,7 +95,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
       </PageHeader>
       <PageContent>
         <StatsCards
-          // TODO: recebe total de pacientes subitrai os que sao empresas e multiplica por 100 e soma com o total de empresas que multiplica por 90
+          // TODO: recebe total de pacientes subitrai os que sao empresas e multiplica por valor do convenio pessoal e soma com o total de empresas que multiplica por valor do convenio empresarial
           totalRevenue={formatCurrencyInCents(
             totalPatients.total + totalPatientsRenovated.total,
             totalEnterprise.total + totalEnterpriseRenovated.total,

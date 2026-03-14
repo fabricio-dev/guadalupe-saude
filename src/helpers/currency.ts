@@ -9,9 +9,11 @@ export const formatCurrencyInCents = (
   individual: number,
   enterprise: number,
 ) => {
-  const a = (individual - enterprise) * 100; //subtrai os pacientes que sao de empresas e multiplica por 100
+  const a =
+    (individual - enterprise) *
+    Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE); //subtrai os pacientes que sao de empresas e multiplica pelo valor do convenio pessoal
 
-  const b = enterprise * 90; //multiplica os pacientes que sao de empresas por 90
+  const b = enterprise * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE); //multiplica os pacientes que sao de empresas pelo valor do convenio empresarial
 
   return formatCurrency(a + b);
 };
