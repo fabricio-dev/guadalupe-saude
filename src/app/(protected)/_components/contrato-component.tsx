@@ -115,19 +115,15 @@ export default function ContratoComponent({
     <div className="mx-auto max-w-4xl bg-white p-4 text-sm text-black">
       {/* Cabeçalho */}
       <div className="relative mb-2 flex items-start justify-between">
-        <div className="flex-1">
-          <img
-            src="/mais.png"
-            alt="Mais Saúde - Cartão de vantagens"
-            className="h-8 w-auto print:h-4"
-          />
+        <div className="flex-1 p-0 text-lg font-bold text-sky-900">
+          CARTÃO MAIS SAÚDE
         </div>
 
         <div className="text-right">
           <div className="absolute top-0 right-0">
             <img
               src="/lab.png"
-              alt="Logo Lasac"
+              alt="Logo Guadalupe Saúde"
               className="h-20 w-auto object-contain print:h-16"
               style={
                 {
@@ -138,7 +134,7 @@ export default function ContratoComponent({
               }
             />
           </div>
-          <div className="mt-16 text-sm">
+          <div className="mt-12 text-sm">
             <div className="font-bold">
               NÚMERO: {numeroContrato || "6441.52"}
             </div>
@@ -148,84 +144,92 @@ export default function ContratoComponent({
       </div>
 
       {/* Título */}
-      <div className="mb-3 text-center">
-        <h1 className="text-lg font-bold">TERMO DE CONVÊNIO</h1>
+      <div className="mb-1 text-center">
+        <h1 className="text-md font-bold">
+          TERMO DE CONVÊNIO - CARTÃO MAIS SAÚDE GUADALUPE
+        </h1>
       </div>
 
       {/* Texto introdutório */}
       <div
         className="mb-2 text-justify leading-relaxed"
-        style={{ fontSize: "14px" }}
+        style={{ fontSize: "12px" }}
       >
         <p>
-          Vimos pelo presente termo, formalizar adesão de V. As. junto ao Cartão
-          Mais Saúde Lasac a partir da data abaixo citada.
+          Pelo presente instrumento particular, as partes acima identificadas
+          formalizam a adesão ao Cartão Mais Saúde Guadalupe, a partir da data
+          abaixo indicada, obrigando-se ao cumprimento das cláusulas e condições
+          a seguir:
         </p>
-        <p className="mt-1">
+        {/* <p className="mt-1">
           Solicitamos observar as seguintes disposições sobre o cartão:
-        </p>
+        </p> */}
       </div>
 
       {/* Termos */}
       <div
         className="mb-2 text-justify leading-relaxed"
-        style={{ fontSize: "13px" }}
+        style={{ fontSize: "12px" }}
       >
         <div className="mb-0">
-          <strong>1.</strong> Os usuários pagarão uma taxa única de manutenção
-          para aquisição do cartão, que terá VALIDADE ANUAL.
+          <strong>CLÁUSULA 1 – DA ADESÃO E FORMA DE PAGAMENTO</strong>
+          <br></br>O usuário pagará uma taxa de adesão/manutenção para aquisição
+          do cartão, com validade anual, podendo o pagamento ser realizado à
+          vista (parcela única) ou parcelado em até 12 (doze) vezes, conforme
+          condições comerciais vigentes no ato da contratação.
+        </div>
+        <div className="mb-0">
+          <strong>CLÁUSULA 2 – DO OBJETO</strong> <br></br>O presente termo tem
+          como objeto a concessão de descontos na realização de exames
+          laboratoriais, densitometria óssea, ultrassonografia, exames
+          oftalmológicos, eletrocardiograma, mamografia, bem como consultas com
+          clínico geral e diversas especialidades médicas, sendo os atendimentos
+          realizados na Clínica Guadalupe.
+        </div>
+        <div className="mb-0">
+          <strong>CLÁUSULA 3 – DA NATUREZA DOS SERVIÇOS</strong>
+          <br></br> O Cartão Mais Saúde Guadalupe não se caracteriza como plano
+          de saúde, seguro-saúde ou qualquer modalidade de assistência médica
+          continuada, consistindo exclusivamente em um programa de benefícios.
+        </div>
+        <div className="mb-0">
+          <strong>CLÁUSULA 4 – DOS VALORES E PAGAMENTOS DOS SERVIÇOS</strong>
+          <br></br>
+          Os serviços utilizados serão pagos diretamente pelo usuário ao
+          prestador, com aplicação de descontos previamente estabelecidos.
+        </div>
+        <div className="mb-0">
+          <strong>CLÁUSULA 5 – DOS SERVIÇOS ADICIONAIS E PARCERIAS</strong>
+          <br></br>A contratada poderá disponibilizar serviços adicionais de
+          apoio aos beneficiários, podendo tais benefícios ser alterados ou
+          suspensos a qualquer tempo.
         </div>
 
         <div className="mb-0">
-          <strong>2.</strong> O objetivo do cartão é prestar serviços em
-          análises clínicas com a realização de exames laboratoriais com
-          descontos especiais e está restrita ao Laboratório Lasac em
-          Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra Nova/PE,
-          Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE. Os laboratórios
-          LASAC de Araripina/PE, Cabrobó/PE e Caruaru/PE já estão com valores
-          promocionais nos exames, mas oferecem desconto adicional aos pacientes
-          conveniados ao Cartão + Saúde LASAC.
+          <strong>CLÁUSULA 6 – DA UTILIZAÇÃO DO CARTÃO</strong>
+          <br></br>O acesso aos benefícios estará condicionado à apresentação do
+          cartão.
         </div>
-
         <div className="mb-0">
-          <strong>3.</strong> Os exames realizados no laboratório Lasac e suas
-          unidades serão cobrados diretamente do cliente com descontos de 50% a
-          60% nos pagamentos à vista, tendo como referência a tabela AMB 92 com
-          CH vigente.
+          <strong>CLÁUSULA 8 – DO PRAZO DE ENTREGA</strong>
+          <br></br>O cartão será disponibilizado em até 30 (trinta) dias.
         </div>
-
         <div className="mb-0">
-          <strong>4.</strong> A contratada poderá disponibilizar serviços de
-          apoio, gratuitamente aos beneficiários, acesso a convênios especiais,
-          firmados com profissionais e empresas de diversos ramos de serviços e
-          produtos; e obtenção de vantagens na aquisição de produtos e/ou
-          serviços. Esses serviços disponibilizados pela contratada poderão ser
-          acrescidos, alterados e suspensos parcialmente ou totalmente, a
-          qualquer tempo mesmo porque se trata de mera liberalidade que não se
-          constitui essência dos serviços hora contratados.
-        </div>
-
-        <div className="mb-0">
-          <strong>5.</strong> O usuário do cartão só terá as vantagens acima
-          citadas mediante a apresentação do CARTÃO MAIS SAÚDE LASAC, sendo ele
-          obrigatório.
-        </div>
-
-        <div className="mb-0">
-          <strong>6.</strong> Este termo terá validade de 30 (trinta) dias após
-          a data de sua aquisição, com o mesmo prazo para a entrega do cartão.
+          <strong>CLÁUSULA 9 – DO CANCELAMENTO</strong>
+          <br></br>O cancelamento poderá ser solicitado a qualquer tempo, sem
+          devolução de valores.
         </div>
       </div>
 
       {/* Concordância */}
-      <div className="mb-3 text-justify font-bold" style={{ fontSize: "14px" }}>
+      <div className="mb-2 text-justify font-bold" style={{ fontSize: "12px" }}>
         DE ACORDO COM TODOS OS TERMOS ACIMA CITADOS, PREENCHO OS DADOS ABAIXO E
         ASSINO:
       </div>
 
       {/* Dados do Titular */}
       <div className="mb-2">
-        <div className="mb-2 font-bold" style={{ fontSize: "14px" }}>
+        <div className="mb-2 font-bold" style={{ fontSize: "12px" }}>
           NOME TITULAR: {patient.name.toUpperCase()}
         </div>
 
@@ -343,13 +347,11 @@ export default function ContratoComponent({
       </div>
 
       {/* Assinatura */}
-      <div className="mt-4 text-center">
+      <div className="mt-1 text-center">
         <div className="mx-auto w-80 border-b border-black pb-1">
           <div className="h-4"></div>
         </div>
-        <div className="mt-1 text-[10px] font-bold">
-          Assinatura do Conveniado
-        </div>
+        <div className="mt-1 text-[10px] font-bold">ASSINATURA DO TITULAR</div>
       </div>
 
       {/* Estilos para impressão */}
