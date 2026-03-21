@@ -134,7 +134,7 @@ export default function ContratoComponent({
               }
             />
           </div>
-          <div className="mt-12 text-sm">
+          <div className="mt-13 text-sm">
             <div className="font-bold">
               NÚMERO: {numeroContrato || "6441.52"}
             </div>
