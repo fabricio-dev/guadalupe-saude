@@ -127,70 +127,100 @@ const ContratoContent = () => {
         </div>
 
         <div class="intro">
-          <p><strong>Vimos pelo presente termo, formalizar adesão de V. As. junto ao Cartão Guadalupe Saúde a partir da data abaixo citada.</strong></p>
-          <p>Solicitamos observar as seguintes disposições sobre o cartão:</p>
+          <p><strong>Pelo presente instrumento particular, as partes acima identificadas formalizam a adesão ao Cartão Mais Saúde Guadalupe, a partir da data abaixo indicada, obrigando-se ao cumprimento das cláusulas e condições a seguir:</strong></p>
+         
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">1</div>
-            <div class="clause-title">Taxa e Validade</div>
+            <div class="clause-title">DA ADESÃO E FORMA DE PAGAMENTO</div>
           </div>
           <div class="clause-content">
-            <p>Os usuários pagarão uma taxa única de manutenção para aquisição do cartão que terá <strong>VALIDADE ANUAL</strong>.</p>
+            <p> O usuário pagará uma taxa de adesão/manutenção para aquisição do cartão, com validade anual, podendo o pagamento ser realizado à vista (parcela única) ou parcelado em até 12 (doze) vezes, conforme condições comerciais vigentes no ato da contratação.</p>
           </div>
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">2</div>
-            <div class="clause-title">Objetivo e Localidades</div>
+            <div class="clause-title">DO OBJETO</div>
           </div>
           <div class="clause-content">
-            <p>O objetivo do cartão é prestar serviços em análises clínicas com a realização de exames laboratoriais com descontos especiais e está restrita ao Laboratório Guadalupe Saúde em <strong>Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra Nova/PE, Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE</strong>.</p>
-            <p>Os laboratórios Guadalupe Saúde de <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já estão com valores promocionais nos exames, mas oferecem desconto adicional aos pacientes conveniados ao Cartão Guadalupe Saúde.</p>
+            <p>O presente termo tem como objeto a concessão de descontos na realização de exames laboratoriais, densitometria óssea, ultrassonografia, exames oftalmológicos, eletrocardiograma, mamografia, bem como consultas com clínico geral e diversas especialidades médicas, sendo os atendimentos realizados na Clínica Guadalupe.</p>
           </div>
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">3</div>
-            <div class="clause-title">Descontos e Pagamento</div>
+            <div class="clause-title">DA NATUREZA DOS SERVIÇOS</div>
           </div>
           <div class="clause-content">
-            <p>Os exames realizados no Laboratório Guadalupe Saúde e suas unidades serão cobrados diretamente do cliente com descontos de <strong>50% a 60%</strong> nos pagamentos à vista, tendo como referência a <strong>tabela AMB 92 com CH vigente</strong>.</p>
+            <p> O Cartão Mais Saúde Guadalupe não se caracteriza como plano de saúde, seguro-saúde ou qualquer modalidade de assistência médica continuada, consistindo exclusivamente em um programa de benefícios.</p>
           </div>
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">4</div>
-            <div class="clause-title">Serviços Adicionais</div>
+            <div class="clause-title">DOS VALORES E PAGAMENTOS DOS SERVIÇOS</div>
           </div>
           <div class="clause-content">
-            <p>A contratada poderá disponibilizar serviços de apoio, gratuitamente aos beneficiários, acesso a convênios especiais, firmados com profissionais e empresas de diversos ramos de serviços e produtos; e obtenção de vantagens na aquisição de produtos e/ou serviços. Esses serviços disponibilizados pela contratada poderão ser acrescidos, alterados e suspensos parcialmente ou totalmente, a qualquer tempo mesmo porque se trata de mera liberalidade que não se constitui essência dos serviços hora contratados.</p>
+            <p> Os serviços utilizados serão pagos diretamente pelo usuário ao prestador, com aplicação de descontos previamente estabelecidos.</p>
           </div>
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">5</div>
-            <div class="clause-title">Apresentação Obrigatória</div>
+            <div class="clause-title">DOS SERVIÇOS ADICIONAIS E PARCERIAS</div>
           </div>
           <div class="clause-content">
-            <p>O usuário do cartão só terá as vantagens acima citadas mediante a apresentação do <strong>CARTÃO GUADALUPE SAÚDE</strong>, sendo ele obrigatório.</p>
+            <p> A contratada poderá disponibilizar serviços adicionais de apoio aos beneficiários, podendo tais benefícios ser alterados ou suspensos a qualquer tempo.</p>
           </div>
         </div>
 
         <div class="clause">
           <div class="clause-header">
             <div class="clause-number">6</div>
-            <div class="clause-title">Prazo de Validade</div>
+            <div class="clause-title">DA UTILIZAÇÃO DO CARTÃO</div>
           </div>
           <div class="clause-content">
-            <p>Este termo terá validade de <strong>30 (trinta) dias</strong> após a data de sua aquisição, com o mesmo prazo para a entrega do cartão.</p>
+            <p> O acesso aos benefícios estará condicionado à apresentação do cartão.</p>
           </div>
         </div>
+        <div class="clause">
+          <div class="clause-header">
+            <div class="clause-number">7</div>
+            <div class="clause-title">DA VIGÊNCIA</div>
+          </div>
+        </div>
+        <div class="clause-content">
+          <p> O presente termo terá validade de 12 (doze) meses a partir da data de sua assinatura.</p>
+        </div>
+      </div>
+
+
+        <div class="clause">
+          <div class="clause-header">
+            <div class="clause-number">7</div>
+            <div class="clause-title">DO PRAZO DE ENTREGA</div>
+          </div>
+          <div class="clause-content">
+            <p> O cartão será disponibilizado em até 30 (trinta) dias.</p>
+          </div>
+        </div>
+        <div class="clause">
+          <div class="clause-header">
+            <div class="clause-number">8</div>
+            <div class="clause-title">DO CANCELAMENTO</div>
+          </div>
+          <div class="clause-content">
+            <p> O cancelamento poderá ser solicitado a qualquer tempo, sem devolução de valores.</p>
+          </div>
+        </div>
+
 
         <div class="footer">
           <p><strong>© ${new Date().getFullYear()} Guadalupe Saúde. Todos os direitos reservados.</strong></p>
@@ -234,12 +264,10 @@ const ContratoContent = () => {
           {/* Introdução */}
           <div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
             <p className="text-justify leading-relaxed">
-              Vimos pelo presente termo, formalizar adesão de V. As. junto ao{" "}
-              <strong>Cartão Guadalupe Saúde</strong> a partir da data abaixo
-              citada.
-            </p>
-            <p className="mt-3 text-justify leading-relaxed">
-              Solicitamos observar as seguintes disposições sobre o cartão:
+              Pelo presente instrumento particular, as partes acima
+              identificadas formalizam a adesão ao Cartão Mais Saúde Guadalupe,
+              a partir da data abaixo indicada, obrigando-se ao cumprimento das
+              cláusulas e condições a seguir:
             </p>
           </div>
 
@@ -251,11 +279,15 @@ const ContratoContent = () => {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   1
                 </div>
-                <h3 className="font-semibold text-sky-900">Taxa e Validade</h3>
+                <h3 className="font-semibold text-sky-900">
+                  DA ADESÃO E FORMA DE PAGAMENTO
+                </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                Os usuários pagarão uma taxa única de manutenção para aquisição
-                do cartão que terá <strong>VALIDADE ANUAL</strong>.
+                O usuário pagará uma taxa de adesão/manutenção para aquisição do
+                cartão, com validade anual, podendo o pagamento ser realizado à
+                vista (parcela única) ou parcelado em até 12 (doze) vezes,
+                conforme condições comerciais vigentes no ato da contratação.
               </p>
             </div>
 
@@ -265,25 +297,15 @@ const ContratoContent = () => {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
                   2
                 </div>
-                <h3 className="font-semibold text-sky-900">
-                  Objetivo e Localidades
-                </h3>
+                <h3 className="font-semibold text-sky-900">DO OBJETO</h3>
               </div>
               <p className="mb-3 text-justify leading-relaxed">
-                O objetivo do cartão é prestar serviços em análises clínicas com
-                a realização de exames laboratoriais com descontos especiais e
-                está restrita ao Laboratório Guadalupe Saúde em{" "}
-                <strong>
-                  Salgueiro/PE, Parnamirim/PE, Serrita/PE, Verdejante/PE, Terra
-                  Nova/PE, Custódia/PE, Ouricuri/PE, Penaforte/CE e Barbalha/CE
-                </strong>
-                .
-              </p>
-              <p className="text-justify leading-relaxed">
-                Os laboratórios Guadalupe Saúde de{" "}
-                <strong>Araripina/PE, Cabrobó/PE e Caruaru/PE</strong> já estão
-                com valores promocionais nos exames, mas oferecem desconto
-                adicional aos pacientes conveniados ao Cartão Guadalupe Saúde.
+                O presente termo tem como objeto a concessão de descontos na
+                realização de exames laboratoriais, densitometria óssea,
+                ultrassonografia, exames oftalmológicos, eletrocardiograma,
+                mamografia, bem como consultas com clínico geral e diversas
+                especialidades médicas, sendo os atendimentos realizados na
+                Clínica Guadalupe.
               </p>
             </div>
 
@@ -294,14 +316,14 @@ const ContratoContent = () => {
                   3
                 </div>
                 <h3 className="font-semibold text-sky-900">
-                  Descontos e Pagamento
+                  DA NATUREZA DOS SERVIÇOS
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                Os exames realizados no Laboratório Guadalupe Saúde e suas
-                unidades serão cobrados diretamente do cliente com descontos de{" "}
-                <strong>50% a 60%</strong> nos pagamentos à vista, tendo como
-                referência a <strong>tabela AMB 92 com CH vigente</strong>.
+                O Cartão Mais Saúde Guadalupe não se caracteriza como plano de
+                saúde, seguro-saúde ou qualquer modalidade de assistência médica
+                continuada, consistindo exclusivamente em um programa de
+                benefícios.
               </p>
             </div>
 
@@ -312,19 +334,12 @@ const ContratoContent = () => {
                   4
                 </div>
                 <h3 className="font-semibold text-sky-900">
-                  Serviços Adicionais
+                  DOS VALORES E PAGAMENTOS DOS SERVIÇOS
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                A contratada poderá disponibilizar serviços de apoio,
-                gratuitamente aos beneficiários, acesso a convênios especiais,
-                firmados com profissionais e empresas de diversos ramos de
-                serviços e produtos; e obtenção de vantagens na aquisição de
-                produtos e/ou serviços. Esses serviços disponibilizados pela
-                contratada poderão ser acrescidos, alterados e suspensos
-                parcialmente ou totalmente, a qualquer tempo mesmo porque se
-                trata de mera liberalidade que não se constitui essência dos
-                serviços hora contratados.
+                Os serviços utilizados serão pagos diretamente pelo usuário ao
+                prestador, com aplicação de descontos previamente estabelecidos.
               </p>
             </div>
 
@@ -335,13 +350,13 @@ const ContratoContent = () => {
                   5
                 </div>
                 <h3 className="font-semibold text-sky-900">
-                  Apresentação Obrigatória
+                  DOS SERVIÇOS ADICIONAIS E PARCERIAS
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                O usuário do cartão só terá as vantagens acima citadas mediante
-                a apresentação do <strong>CARTÃO GUADALUPE SAÚDE</strong>, sendo
-                ele obrigatório.
+                A contratada poderá disponibilizar serviços adicionais de apoio
+                aos beneficiários, podendo tais benefícios ser alterados ou
+                suspensos a qualquer tempo.
               </p>
             </div>
 
@@ -352,14 +367,53 @@ const ContratoContent = () => {
                   6
                 </div>
                 <h3 className="font-semibold text-sky-900">
-                  Prazo de Validade
+                  DA UTILIZAÇÃO DO CARTÃO
                 </h3>
               </div>
               <p className="text-justify leading-relaxed">
-                Este termo terá validade de <strong>30 (trinta) dias</strong>{" "}
-                após a data de sua aquisição, com o mesmo prazo para a entrega
-                do cartão.
+                O acesso aos benefícios estará condicionado à apresentação do
+                cartão.
               </p>
+            </div>
+          </div>
+          {/* Cláusula 7 */}
+          <div className="rounded-lg border border-gray-200 p-4">
+            <div className="mb-2 flex items-center space-x-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                7
+              </div>
+            </div>
+            <h3 className="font-semibold text-sky-900">DA VIGÊNCIA</h3>
+            <div className="text-justify leading-relaxed">
+              O presente termo terá validade de 12 (doze) meses a partir da data
+              de sua assinatura.
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 p-4">
+            <div className="mb-2 flex items-center space-x-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                8
+              </div>
+              <h3 className="font-semibold text-sky-900">
+                DO PRAZO DE ENTREGA
+              </h3>
+            </div>
+            <div className="text-justify leading-relaxed">
+              O cartão será disponibilizado em até 30 (trinta) dias.
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 p-4">
+            <div className="mb-2 flex items-center space-x-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-600 text-sm font-bold text-white">
+                9
+              </div>
+              <h3 className="font-semibold text-sky-900">DO CANCELAMENTO</h3>
+            </div>
+            <div className="text-justify leading-relaxed">
+              O cancelamento poderá ser solicitado a qualquer tempo, sem
+              devolução de valores.
             </div>
           </div>
 
