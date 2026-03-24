@@ -803,7 +803,7 @@ export function ConvenioForm() {
                     control={form.control}
                     name="dependents6"
                     render={({ field }) => (
-                      <FormItem hidden={true}>
+                      <FormItem>
                         <FormLabel className="text-sky-700">
                           Dependente 6
                         </FormLabel>
@@ -861,7 +861,9 @@ export function ConvenioForm() {
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="PIX">PIX (QR Code)</SelectItem>
-                          <SelectItem value="CARD">Cartão (Crédito)</SelectItem>
+                          <SelectItem value="CARD">
+                            Cartão à vista (Crédito)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

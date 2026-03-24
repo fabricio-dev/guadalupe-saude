@@ -74,6 +74,27 @@ export const clinicsTable = pgTable("clinics", {
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => new Date()),
+  individualActivationPriceInCents: integer(
+    "individual_activation_price_in_cents",
+  )
+    .notNull()
+    .default(0),
+  individualRenovationPriceInCents: integer(
+    "individual_renovation_price_in_cents",
+  )
+    .notNull()
+    .default(0),
+  enterpriseActivationPriceInCents: integer(
+    "enterprise_activation_price_in_cents",
+  )
+    .notNull()
+    .default(0),
+  enterpriseRenovationPriceInCents: integer(
+    "enterprise_renovation_price_in_cents",
+  )
+    .notNull()
+    .default(0),
+  //preço em centavos
 });
 
 /* table  vendedor */
@@ -146,6 +167,7 @@ export const patientsTable = pgTable("patients", {
   activeAt: timestamp("active_at"),
   reactivatedAt: timestamp("reactivated_at"),
   whatsappConsent: boolean("whatsapp_consent").notNull().default(true),
+  priceInCents: integer("price_in_cents").notNull().default(0),
   paymentType: paymentTypeEnum("payment_type"),
   paymentStatus: paymentStatusEnum("payment_status").default("PENDING"),
   stripeCheckoutSessionId: text("stripe_checkout_session_id"),

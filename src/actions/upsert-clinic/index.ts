@@ -26,6 +26,14 @@ export const upsertClinic = actionClient
         .update(clinicsTable)
         .set({
           name: parsedInput.name,
+          individualActivationPriceInCents:
+            parsedInput.individualActivationPriceInCents,
+          individualRenovationPriceInCents:
+            parsedInput.individualRenovationPriceInCents,
+          enterpriseActivationPriceInCents:
+            parsedInput.enterpriseActivationPriceInCents,
+          enterpriseRenovationPriceInCents:
+            parsedInput.enterpriseRenovationPriceInCents,
           updatedAt: new Date(),
         })
         .where(eq(clinicsTable.id, parsedInput.id));
@@ -37,6 +45,14 @@ export const upsertClinic = actionClient
         .insert(clinicsTable)
         .values({
           name: parsedInput.name,
+          individualActivationPriceInCents:
+            parsedInput.individualActivationPriceInCents,
+          individualRenovationPriceInCents:
+            parsedInput.individualRenovationPriceInCents,
+          enterpriseActivationPriceInCents:
+            parsedInput.enterpriseActivationPriceInCents,
+          enterpriseRenovationPriceInCents:
+            parsedInput.enterpriseRenovationPriceInCents,
         })
         .returning();
 

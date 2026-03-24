@@ -841,7 +841,7 @@ export default function ConvenioVendedorPage() {
                         control={form.control}
                         name="dependents6"
                         render={({ field }) => (
-                          <FormItem hidden={true}>
+                          <FormItem>
                             <FormLabel className="text-emerald-950">
                               Dependente 6
                             </FormLabel>
@@ -903,7 +903,7 @@ export default function ConvenioVendedorPage() {
                             <SelectContent>
                               <SelectItem value="PIX">PIX (QR Code)</SelectItem>
                               <SelectItem value="CARD">
-                                Cartão (Crédito)
+                                Cartão à vista (Crédito)
                               </SelectItem>
                             </SelectContent>
                           </Select>

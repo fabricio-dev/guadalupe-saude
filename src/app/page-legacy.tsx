@@ -1652,7 +1652,8 @@ function HomeLegacy() {
           </div>
           <div className="footer-divider">
             <p>
-              © 2026 Guadalupe Saúde. Todos os direitos reservados. Powered by{" "}
+              © {new Date().getFullYear()} Guadalupe Saúde. Todos os direitos
+              reservados. Powered by{" "}
               <a
                 href="https://www.sertaosoftware.com.br"
                 className="footer-link"

@@ -110,6 +110,31 @@ export const upsertPatient = actionClient
           },
         });
     } else {
+      let clinicName: string | undefined;
+      let priceInCents = 0;
+      if (parsedInput.clinicId) {
+        const clinicResult = await db
+          .select({
+            name: clinicsTable.name,
+            individualActivationPriceInCents:
+              clinicsTable.individualActivationPriceInCents,
+            enterpriseActivationPriceInCents:
+              clinicsTable.enterpriseActivationPriceInCents,
+          })
+          .from(clinicsTable)
+          .where(eq(clinicsTable.id, parsedInput.clinicId))
+          .limit(1);
+
+        const clinic = clinicResult[0];
+        clinicName = clinic?.name;
+
+        if (clinic) {
+          priceInCents =
+            parsedInput.cardType === "enterprise"
+              ? clinic.enterpriseActivationPriceInCents
+              : clinic.individualActivationPriceInCents;
+        }
+      }
       // Criação - sempre usar activeAt; pagamento considerado pago na criação
       const newPatientData = {
         ...parsedInput,
@@ -121,6 +146,7 @@ export const upsertPatient = actionClient
           ? convertToUTCDate(parsedInput.contractDate)
           : getActivationDate(),
         paymentStatus: "PAID" as const,
+        priceInCents,
         paidAt: getActivationDate(),
         editedBy: session.user.id,
         editedAt: getActivationDate(),
@@ -130,15 +156,6 @@ export const upsertPatient = actionClient
 
       // Enviar WhatsApp de boas-vindas para o novo paciente
       // Buscar nome da clínica para incluir na mensagem
-      let clinicName: string | undefined;
-      if (parsedInput.clinicId) {
-        const clinicResult = await db
-          .select({ name: clinicsTable.name })
-          .from(clinicsTable)
-          .where(eq(clinicsTable.id, parsedInput.clinicId))
-          .limit(1);
-        clinicName = clinicResult[0]?.name;
-      }
 
       // Preparar template do WhatsApp (primeira ativação)
       const templateConfig = getTemplateConfig("activation", {

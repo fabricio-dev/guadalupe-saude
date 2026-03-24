@@ -324,7 +324,7 @@ const UpsertPatientForm = ({
       city: patient?.city ?? "",
       state: patient?.state ?? "",
 
-      cardType: patient?.cardType ?? "personal",
+      cardType: patient?.cardType ?? undefined,
       Enterprise: patient?.Enterprise ?? "",
       numberCards: patient?.numberCards?.toString() ?? "",
       sellerId: patient?.sellerId ?? "",
@@ -365,7 +365,7 @@ const UpsertPatientForm = ({
         city: patient?.city ?? "",
         state: patient?.state ?? "",
 
-        cardType: patient?.cardType ?? "personal",
+        cardType: patient?.cardType ?? undefined,
         Enterprise: patient?.Enterprise ?? "",
         numberCards: patient?.numberCards?.toString() ?? "",
         sellerId: patient?.sellerId ?? "",
@@ -668,6 +668,7 @@ const UpsertPatientForm = ({
                       onValueChange={(values) => {
                         field.onChange(values.value);
                       }}
+                      disabled={!!patient?.cpfNumber}
                       onBlur={async () => {
                         const cpf = field.value;
                         if (cpf && cpf.length >= 11 && isValidCPF(cpf)) {
@@ -803,12 +804,12 @@ const UpsertPatientForm = ({
                         }, 250);
                       }
                     }}
-                    defaultValue={field.value}
-                    disabled={loadingCardType}
+                    value={field.value}
+                    disabled={loadingCardType || !!patient}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo de Convenio" />
+                        <SelectValue placeholder="Tipo de Convenio" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -830,7 +831,9 @@ const UpsertPatientForm = ({
                   <FormControl>
                     <Input
                       placeholder="Nome da empresa"
-                      disabled={form.watch("cardType") !== "enterprise"}
+                      disabled={
+                        form.watch("cardType") !== "enterprise" || !!patient
+                      }
                       {...field}
                     />
                   </FormControl>

@@ -58,6 +58,14 @@ const ClinicsPage = async ({ searchParams }: ClinicsPageProps) => {
       name: clinicsTable.name,
       createdAt: clinicsTable.createdAt,
       updatedAt: clinicsTable.updatedAt,
+      individualActivationPriceInCents:
+        clinicsTable.individualActivationPriceInCents,
+      individualRenovationPriceInCents:
+        clinicsTable.individualRenovationPriceInCents,
+      enterpriseActivationPriceInCents:
+        clinicsTable.enterpriseActivationPriceInCents,
+      enterpriseRenovationPriceInCents:
+        clinicsTable.enterpriseRenovationPriceInCents,
     })
     .from(usersToClinicsTable)
     .innerJoin(clinicsTable, eq(usersToClinicsTable.clinicId, clinicsTable.id))
