@@ -243,7 +243,7 @@ const UpsertPatientForm = ({
       city: patient?.city ?? "",
       state: patient?.state ?? "",
 
-      cardType: patient?.cardType ?? "personal",
+      cardType: patient?.cardType ?? undefined,
       Enterprise: patient?.Enterprise ?? "",
       numberCards: patient?.numberCards?.toString() ?? "",
       sellerId: patient?.sellerId ?? sellerId, //esta pegando do form nao mais do vendedor
@@ -351,7 +351,7 @@ const UpsertPatientForm = ({
         city: patient?.city ?? "",
         state: patient?.state ?? "",
 
-        cardType: patient?.cardType ?? "personal",
+        cardType: patient?.cardType ?? undefined,
         Enterprise: patient?.Enterprise ?? "",
         numberCards: patient?.numberCards?.toString() ?? "",
         sellerId: patient?.sellerId ?? sellerId,
@@ -559,6 +559,7 @@ const UpsertPatientForm = ({
                       placeholder="000.000.000-00"
                       customInput={Input}
                       value={field.value}
+                      disabled={!!patient?.cpfNumber}
                       onValueChange={(values) => {
                         field.onChange(values.value);
                       }}
@@ -694,7 +695,7 @@ const UpsertPatientForm = ({
                       }
                     }}
                     value={field.value}
-                    disabled={loadingCardType}
+                    disabled={loadingCardType || !!patient}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -720,7 +721,9 @@ const UpsertPatientForm = ({
                   <FormControl>
                     <Input
                       placeholder="Nome da empresa"
-                      disabled={form.watch("cardType") !== "enterprise"}
+                      disabled={
+                        form.watch("cardType") !== "enterprise" || !!patient
+                      }
                       {...field}
                     />
                   </FormControl>

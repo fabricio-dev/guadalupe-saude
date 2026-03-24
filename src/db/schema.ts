@@ -168,6 +168,9 @@ export const patientsTable = pgTable("patients", {
   reactivatedAt: timestamp("reactivated_at"),
   whatsappConsent: boolean("whatsapp_consent").notNull().default(true),
   priceInCents: integer("price_in_cents").notNull().default(0),
+  priceInCentsRenovation: integer("price_in_cents_renovation")
+    .notNull()
+    .default(0),
   paymentType: paymentTypeEnum("payment_type"),
   paymentStatus: paymentStatusEnum("payment_status").default("PENDING"),
   stripeCheckoutSessionId: text("stripe_checkout_session_id"),
