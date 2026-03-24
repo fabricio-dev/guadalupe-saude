@@ -106,6 +106,32 @@ export const activatePatient = actionClient
       }
     }
 
+    if (!patient.clinicId) {
+      throw new Error("Paciente sem clínica associada");
+    }
+
+    const [clinicRow] = await db
+      .select()
+      .from(clinicsTable)
+      .where(eq(clinicsTable.id, patient.clinicId))
+      .limit(1);
+
+    if (!clinicRow) {
+      throw new Error("Clínica não encontrada");
+    }
+
+    const isEnterprise = patient.cardType === "enterprise";
+
+    // preco de ativacao
+    const price = isEnterprise
+      ? clinicRow.enterpriseActivationPriceInCents
+      : clinicRow.individualActivationPriceInCents;
+    const priceRenovation = isEnterprise
+      ? clinicRow.enterpriseRenovationPriceInCents
+      : clinicRow.individualRenovationPriceInCents;
+
+    const clinicName = clinicRow.name;
+
     // Obter data/hora atual no fuso horário de São Paulo e converter para UTC
     const now = dayjs.tz(new Date(), "America/Sao_Paulo").utc().toDate();
 
@@ -139,6 +165,7 @@ export const activatePatient = actionClient
             paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
             paidAt: now,
             paymentType: parsedInput.paymentType ?? "PIX", // recebe o tipo de pagamento do paciente
+            priceInCents: price,
           }
         : patient.expirationDate && patient.expirationDate > now
           ? {
@@ -152,8 +179,10 @@ export const activatePatient = actionClient
               paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
               paidAt: now,
               paymentType: parsedInput.paymentType ?? "PIX",
+              priceInCentsRenovation: priceRenovation,
             }
           : {
+              //renovacao
               // Atualizar a data de expiração
               expirationDate: newExpirationDate,
               reactivatedAt: now,
@@ -164,6 +193,7 @@ export const activatePatient = actionClient
               paymentStatus: "PAID" as const, // se ta ativando dentro do sistema, o pagamento é considerado pago
               paidAt: now,
               paymentType: parsedInput.paymentType ?? "PIX",
+              priceInCentsRenovation: priceRenovation,
             };
 
     // Atualizar o paciente
@@ -182,17 +212,6 @@ export const activatePatient = actionClient
       console.log(
         `[RENOVAÇÃO] Notificações antigas deletadas para paciente ${parsedInput.patientId}`,
       );
-    }
-
-    // Buscar nome da clínica para incluir na mensagem
-    let clinicName: string | undefined;
-    if (patient.clinicId) {
-      const clinicResult = await db
-        .select({ name: clinicsTable.name })
-        .from(clinicsTable)
-        .where(eq(clinicsTable.id, patient.clinicId))
-        .limit(1);
-      clinicName = clinicResult[0]?.name;
     }
 
     // Determinar tipo de mensagem baseado no tipo de ativação
