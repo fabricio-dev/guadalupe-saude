@@ -83,6 +83,8 @@ interface Patient {
   activeAt: Date | null;
   whatsappConsent: boolean;
   paymentType: "PIX" | "CARD" | "DINHEIRO" | null;
+  priceInCents: number;
+  priceInCentsRenovation: number;
   paymentStatus:
     | "PENDING"
     | "PROOF_SUBMITTED"

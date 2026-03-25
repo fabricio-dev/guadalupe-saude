@@ -80,6 +80,8 @@ interface Patient {
   reactivatedAt: Date | null;
   activeAt: Date | null;
   whatsappConsent: boolean;
+  priceInCents: number;
+  priceInCentsRenovation: number;
   paymentType: "PIX" | "CARD" | "DINHEIRO" | null;
   paymentStatus:
     | "PENDING"
