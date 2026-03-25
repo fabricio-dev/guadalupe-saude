@@ -1,19 +1,19 @@
-export const formatCurrency = (value: number) => {
+export const formatCurrencyInCents = (value: number) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(value);
+  }).format(value / 100);
 };
 
-export const formatCurrencyInCents = (
-  individual: number,
-  enterprise: number,
-) => {
-  const a =
-    (individual - enterprise) *
-    Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE); //subtrai os pacientes que sao de empresas e multiplica pelo valor do convenio pessoal
+// export const formatCurrencyInCents = (
+//   individual: number,
+//   enterprise: number,
+// ) => {
+//   const a =
+//     (individual - enterprise) *
+//     Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE); //subtrai os pacientes que sao de empresas e multiplica pelo valor do convenio pessoal
 
-  const b = enterprise * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE); //multiplica os pacientes que sao de empresas pelo valor do convenio empresarial
+//   const b = enterprise * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE); //multiplica os pacientes que sao de empresas pelo valor do convenio empresarial
 
-  return formatCurrency(a + b);
-};
+//   return formatCurrency(a + b);
+// };

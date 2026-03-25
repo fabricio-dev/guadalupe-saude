@@ -69,8 +69,10 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     patientsToExpire,
     dailyConveniosData,
     totalEnterprise,
-    totalPatientsRenovated,
-    totalEnterpriseRenovated,
+    totalPatientsRenovated, // nao eh usado mais era na logica antiga
+    totalEnterpriseRenovated, // nao eh usado mais era na logica antiga
+    valorFaturadoPatientsRenovated,
+    valorFaturadoPatients,
   } = await getDashboard({
     from,
     to,
@@ -86,7 +88,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         <PageHeaderContent>
           <PageTitle>Dashboard</PageTitle>
           <PageDescription>
-            Bem-vindo ao sistema de gestão de convenios.
+            Bem-vindo ao sistema de gestão de convenios.{" "}
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
@@ -97,8 +99,8 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         <StatsCards
           // TODO: recebe total de pacientes subitrai os que sao empresas e multiplica por valor do convenio pessoal e soma com o total de empresas que multiplica por valor do convenio empresarial
           totalRevenue={formatCurrencyInCents(
-            totalPatients.total + totalPatientsRenovated.total,
-            totalEnterprise.total + totalEnterpriseRenovated.total,
+            Number(valorFaturadoPatientsRenovated.total ?? 0) +
+              Number(valorFaturadoPatients.total ?? 0),
           )}
           totalPatients={totalPatients.total + totalPatientsRenovated.total}
           totalSellers={totalSellers.total}

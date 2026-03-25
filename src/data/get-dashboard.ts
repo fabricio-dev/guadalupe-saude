@@ -14,6 +14,7 @@ import {
   lte,
   or,
   sql,
+  sum,
 } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -73,12 +74,14 @@ export const getDashboard = async ({ from, to, session }: Params) => {
   const totalCondition = sql<number>`${conveniosCondition} + ${conveniosRenovadosCondition}`;
 
   const [
-    [totalPatients],
-    [totalPatientsRenovated],
+    [totalPatients], // patient ativados individual
+    [totalPatientsRenovated], // patient renovados individuais
+    [valorFaturadoPatientsRenovated],
+    [valorFaturadoPatients],
     [totalSellers],
     [totalClinics],
-    [totalEnterprise],
-    [totalEnterpriseRenovated],
+    [totalEnterprise], // patient ativados empresarial
+    [totalEnterpriseRenovated], // patient renovado empresarial
     topSellers,
     topClinics,
     patientsToExpire,
@@ -107,7 +110,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           lte(patientsTable.activeAt, toDate),
         ),
       ),
-    db
+    db // Pacientes renovados no período
       .select({
         total: count(),
       })
@@ -127,6 +130,46 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           sql`${patientsTable.reactivatedAt} IS NOT NULL`,
         ),
       ),
+    db // soma valor dos patients renovados no período
+      .select({
+        total: sum(patientsTable.priceInCentsRenovation),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(
+            patientsTable.clinicId,
+            db
+              .select({ clinicId: usersToClinicsTable.clinicId })
+              .from(usersToClinicsTable)
+              .where(eq(usersToClinicsTable.userId, session.user.id)),
+          ),
+          eq(patientsTable.isActive, true),
+          gte(patientsTable.reactivatedAt, fromDate),
+          lte(patientsTable.reactivatedAt, toDate),
+          sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+        ),
+      ),
+    db
+      .select({
+        total: sum(patientsTable.priceInCents),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(
+            patientsTable.clinicId,
+            db
+              .select({ clinicId: usersToClinicsTable.clinicId })
+              .from(usersToClinicsTable)
+              .where(eq(usersToClinicsTable.userId, session.user.id)),
+          ),
+          eq(patientsTable.isActive, true),
+          gte(patientsTable.activeAt, fromDate),
+          lte(patientsTable.activeAt, toDate),
+        ),
+      ),
+
     // TODO: Implementa a query para o total de vendedores
     db
       .select({
@@ -455,6 +498,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
   return {
     totalPatients,
     totalPatientsRenovated,
+    valorFaturadoPatientsRenovated,
+    valorFaturadoPatients,
     totalSellers,
     totalClinics,
     totalEnterprise,
