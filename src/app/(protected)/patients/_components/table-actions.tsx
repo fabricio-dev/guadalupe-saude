@@ -2,7 +2,7 @@
 
 import {
   CheckCircle,
-  CreditCardIcon,
+  //CreditCardIcon,
   Edit2,
   MoreHorizontal,
   PrinterIcon,
@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/select";
 
 import PrintCardComponent from "../../_components/print-card-component";
-import { RenewalLinkDialog } from "../../_components/renewal-link-dialog";
+//import { RenewalLinkDialog } from "../../_components/renewal-link-dialog";
 import UpsertPatientForm from "./upsert-patient-form";
 
 interface Patient {
@@ -216,7 +216,7 @@ export default function TableActions({
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          <RenewalLinkDialog
+          {/* <RenewalLinkDialog
             patientId={patient.id}
             isAllowed={isExpired || isPending}
             trigger={
@@ -227,7 +227,7 @@ export default function TableActions({
                 <CreditCardIcon className="mr-2 h-4 w-4" /> Link de pagamento
               </DropdownMenuItem>
             }
-          />
+          /> */}
           <AlertDialog
             open={activateDialogOpen}
             onOpenChange={handleActivateDialogOpenChange}

@@ -2,7 +2,7 @@
 
 import {
   CheckCircle,
-  CreditCardIcon,
+  // CreditCardIcon,
   Edit2,
   MoreHorizontal,
   PrinterIcon,
@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 
 import PrintCardComponent from "@/app/(protected)/_components/print-card-component";
-import { RenewalLinkDialog } from "@/app/(protected)/_components/renewal-link-dialog";
+//import { RenewalLinkDialog } from "@/app/(protected)/_components/renewal-link-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -217,7 +217,7 @@ export default function TableActions({
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          <RenewalLinkDialog
+          {/* <RenewalLinkDialog
             patientId={patient.id}
             isAllowed={isExpired || isPending}
             trigger={
@@ -228,7 +228,7 @@ export default function TableActions({
                 <CreditCardIcon className="mr-2 h-4 w-4" /> Link de pagamento
               </DropdownMenuItem>
             }
-          />
+          /> */}
           <AlertDialog
             open={activateDialogOpen}
             onOpenChange={handleActivateDialogOpenChange}

@@ -180,7 +180,7 @@ export function ConvenioForm() {
       dependents6: "",
       acceptTerms: false,
       whatsappConsent: true,
-      paymentType: undefined as unknown as "PIX" | "CARD",
+      paymentType: "PIX", //undefined as unknown as "PIX" | "CARD",
     },
   });
 
@@ -851,8 +851,10 @@ export function ConvenioForm() {
                         Escolha como pagar
                       </FormLabel>
                       <Select
+                        defaultValue="PIX"
                         onValueChange={field.onChange}
                         value={field.value}
+                        disabled={true}
                       >
                         <FormControl>
                           <SelectTrigger>
