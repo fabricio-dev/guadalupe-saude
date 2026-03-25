@@ -14,6 +14,7 @@ import {
   lte,
   or,
   sql,
+  sum,
 } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -68,6 +69,8 @@ export const getDashboardGestor = async ({ from, to, session }: Params) => {
   const [
     [totalPatients],
     [totalPatientsRenovated],
+    [valorFaturadoPatientsRenovated],
+    [valorFaturadoPatients],
     [totalSellers],
     [totalEnterprise],
     [totalEnterpriseRenovated],
@@ -121,7 +124,45 @@ export const getDashboardGestor = async ({ from, to, session }: Params) => {
           sql`${patientsTable.reactivatedAt} IS NOT NULL`,
         ),
       ),
-
+    db
+      .select({
+        total: sum(patientsTable.priceInCentsRenovation),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(
+            patientsTable.clinicId,
+            db
+              .select({ clinicId: sellersTable.clinicId })
+              .from(sellersTable)
+              .where(eq(sellersTable.email, session.user.email)),
+          ),
+          eq(patientsTable.isActive, true),
+          gte(patientsTable.reactivatedAt, fromDate),
+          lte(patientsTable.reactivatedAt, toDate),
+          sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+        ),
+      ),
+    db
+      .select({
+        total: sum(patientsTable.priceInCents),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(
+            patientsTable.clinicId,
+            db
+              .select({ clinicId: sellersTable.clinicId })
+              .from(sellersTable)
+              .where(eq(sellersTable.email, session.user.email)),
+          ),
+          eq(patientsTable.isActive, true),
+          gte(patientsTable.activeAt, fromDate),
+          lte(patientsTable.activeAt, toDate),
+        ),
+      ),
     // Total de vendedores da clínica do gestor
     db
       .select({
@@ -432,6 +473,8 @@ export const getDashboardGestor = async ({ from, to, session }: Params) => {
   return {
     totalPatients,
     totalPatientsRenovated,
+    valorFaturadoPatientsRenovated,
+    valorFaturadoPatients,
     totalSellers,
     totalEnterprise,
     totalEnterpriseRenovated,

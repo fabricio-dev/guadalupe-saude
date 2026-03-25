@@ -64,12 +64,14 @@ async function DashboardGestor({ searchParams }: DashboardGestorPageProps) {
   const {
     totalPatients,
     totalPatientsRenovated,
+    valorFaturadoPatientsRenovated,
+    valorFaturadoPatients,
     totalSellers,
     topSellers,
     patientsToExpire,
     dailyConveniosData,
-    totalEnterprise,
-    totalEnterpriseRenovated,
+    //totalEnterprise,
+    //totalEnterpriseRenovated,
     gestorClinic,
   } = await getDashboardGestor({
     from,
@@ -96,8 +98,8 @@ async function DashboardGestor({ searchParams }: DashboardGestorPageProps) {
       <PageContent>
         <StatsCards
           totalRevenue={formatCurrencyInCents(
-            totalPatients.total + totalPatientsRenovated.total,
-            totalEnterprise.total + totalEnterpriseRenovated.total,
+            Number(valorFaturadoPatientsRenovated.total ?? 0) +
+              Number(valorFaturadoPatients.total ?? 0),
           )}
           totalPatients={totalPatients.total + totalPatientsRenovated.total}
           totalSellers={totalSellers.total}
