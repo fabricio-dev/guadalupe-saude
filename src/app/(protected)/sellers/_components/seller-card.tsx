@@ -22,6 +22,7 @@ import {
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { sellersTable } from "@/db/schema";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 import GenerateLinkButton from "../../_components/generate-link-button";
 import UpsertSellerForm from "./upsert-seller-form";
@@ -31,6 +32,7 @@ interface SellerCardProps {
     patientsCount: number;
     clinicName: string | null;
     enterpriseCount: number;
+    faturamentoInCents: number;
   };
 }
 const SellerCard = ({ seller }: SellerCardProps) => {
@@ -42,21 +44,10 @@ const SellerCard = ({ seller }: SellerCardProps) => {
     .map((name) => name[0])
     .join("");
 
-  // Calcular valor dos convênios vendidos (pacientes individual * R$ valor do convenio pessoal) + (pacientes de empresas * R$ valor do convenio empresarial)
-  const conveniosValue =
-    (seller.patientsCount - seller.enterpriseCount) *
-      Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
-    seller.enterpriseCount * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
-
-  // Formatar valor como moeda brasileira
-  const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-  };
+  const faturamentoCents = Number(seller.faturamentoInCents ?? 0);
+  const commissionCents = Math.round(
+    (faturamentoCents * seller.percentage) / 100,
+  );
 
   return (
     <Card>
@@ -104,7 +95,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
             Faturamento:
           </div>
           <span className="font-semibold">
-            {formatCurrency(conveniosValue)}
+            {formatCurrencyInCents(faturamentoCents)}
           </span>
         </Badge>
 
@@ -114,7 +105,7 @@ const SellerCard = ({ seller }: SellerCardProps) => {
             Comissão:
           </div>
           <span className="font-semibold">
-            {formatCurrency(conveniosValue * (seller.percentage / 100))}
+            {formatCurrencyInCents(commissionCents)}
           </span>
         </Badge>
         <Badge variant="outline" className="justify-between">

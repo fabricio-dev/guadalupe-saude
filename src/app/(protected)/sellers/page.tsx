@@ -109,6 +109,18 @@ const SellersPage = async ({ searchParams }: SellersPageProps) => {
     sql<number>`COUNT(CASE WHEN ${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${fromDate} AND ${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${toDate} AND ${patientsTable.reactivatedAt} IS NOT NULL THEN 1 END)`.mapWith(
       Number,
     );
+  const faturamentoCondition =
+    sql<number>`COALESCE(SUM(CASE WHEN ${patientsTable.activeAt} AT TIME ZONE 'UTC' >= ${fromDate} AND ${patientsTable.activeAt} AT TIME ZONE 'UTC' <= ${toDate} AND ${patientsTable.activeAt} IS NOT NULL THEN ${patientsTable.priceInCents} ELSE 0 END), 0)`.mapWith(
+      Number,
+    );
+  const faturamentoConditionRenovation =
+    sql<number>`COALESCE(SUM(CASE WHEN ${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${fromDate} AND ${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${toDate} AND ${patientsTable.reactivatedAt} IS NOT NULL THEN ${patientsTable.priceInCentsRenovation} ELSE 0 END), 0)`.mapWith(
+      Number,
+    );
+  const totalFaturamentoCondition =
+    sql<number>`${faturamentoCondition} + ${faturamentoConditionRenovation}`.mapWith(
+      Number,
+    );
   const totalCondition =
     sql<number>`${conveniosCondition} + ${conveniosRenovadosCondition}`.mapWith(
       Number,
@@ -138,6 +150,7 @@ const SellersPage = async ({ searchParams }: SellersPageProps) => {
       clinicName: clinicsTable.name,
       patientsCount: totalCondition,
       enterpriseCount: enterpriseTotalCondition,
+      faturamentoInCents: totalFaturamentoCondition,
 
       percentage: sellersTable.percentage,
       pixKey: sellersTable.pixKey,

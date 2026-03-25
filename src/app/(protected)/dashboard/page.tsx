@@ -68,9 +68,9 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     topClinics,
     patientsToExpire,
     dailyConveniosData,
-    totalEnterprise,
-    totalPatientsRenovated, // nao eh usado mais era na logica antiga
-    totalEnterpriseRenovated, // nao eh usado mais era na logica antiga
+    //totalEnterprise,// nao eh usado mais era na logica antiga
+    totalPatientsRenovated,
+    // totalEnterpriseRenovated, // nao eh usado mais era na logica antiga
     valorFaturadoPatientsRenovated,
     valorFaturadoPatients,
   } = await getDashboard({
