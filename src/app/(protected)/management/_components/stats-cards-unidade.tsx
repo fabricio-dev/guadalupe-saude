@@ -23,8 +23,9 @@ interface StatsCardsUnidadeProps {
 }
 
 const StatsCardsUnidade = ({
-  totalPatients,
-  totalEnterprise,
+  faturamentoTotal = 0,
+  // totalPatients: _totalPatients,
+  // totalEnterprise: _totalEnterprise,
   //totalConvenios,
   conveniosVencidos,
   conveniosRenovados,
@@ -34,7 +35,7 @@ const StatsCardsUnidade = ({
   const stats = [
     {
       title: "Faturamento Total",
-      value: formatCurrencyInCents(totalPatients, totalEnterprise),
+      value: formatCurrencyInCents(faturamentoTotal),
       icon: DollarSign,
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",

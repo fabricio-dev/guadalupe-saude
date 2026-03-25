@@ -3,7 +3,7 @@ import "dayjs/locale/pt-br";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { and, count, eq, inArray, or, sql } from "drizzle-orm";
+import { and, count, eq, inArray, or, sql, sum } from "drizzle-orm";
 
 dayjs.locale("pt-br");
 dayjs.extend(utc);
@@ -41,6 +41,7 @@ interface PatientActivation {
 }
 
 interface ManagementData {
+  /** Soma em centavos: estimativa (env × quantidades) + valores reais dos pacientes no período */
   faturamentoTotal: number;
   totalConvenios: number;
   conveniosVencidos: number;
@@ -152,7 +153,36 @@ const getFaturamentoMensal = async (
           sql`${patientsTable.reactivatedAt} IS NOT NULL`,
         ),
       );
+    // soma valores de  pacientes novos no mês
+    const [totalFaturamentoPatients] = await db
+      .select({
+        total: sum(patientsTable.priceInCents),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(patientsTable.clinicId, clinicIds),
+          eq(patientsTable.isActive, true),
+          sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' >= ${periodStart}`,
+          sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' <= ${periodEnd}`,
+        ),
+      );
 
+    // soma valores de pacientes renovados no mês
+    const [totalFaturamentoPatientsRenovated] = await db
+      .select({
+        total: sum(patientsTable.priceInCentsRenovation),
+      })
+      .from(patientsTable)
+      .where(
+        and(
+          inArray(patientsTable.clinicId, clinicIds),
+          eq(patientsTable.isActive, true),
+          sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${periodStart}`,
+          sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${periodEnd}`,
+          sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+        ),
+      );
     // Buscar pacientes de empresas novos no mês
     const [totalEnterpriseMonth] = await db
       .select({
@@ -190,14 +220,22 @@ const getFaturamentoMensal = async (
     const totalPatientsMonth_total =
       (totalPatientsMonth?.total || 0) +
       (totalPatientsRenovatedMonth?.total || 0);
+
     const totalEnterpriseMonth_total =
       (totalEnterpriseMonth?.total || 0) +
       (totalEnterpriseRenovatedMonth?.total || 0);
-    const faturamentoMes =
+
+    const faturamentoEstimadoMesReais =
       (totalPatientsMonth_total - totalEnterpriseMonth_total) *
         Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
       totalEnterpriseMonth_total *
         Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
+
+    const faturamentoPacientesMesCentavos =
+      Number(totalFaturamentoPatients?.total ?? 0) +
+      Number(totalFaturamentoPatientsRenovated?.total ?? 0);
+
+    const faturamentoMes = faturamentoPacientesMesCentavos;
 
     // Mapeamento de meses para português
     const monthNames = {
@@ -309,6 +347,8 @@ export const getManagement = async ({
       [conveniosRenovados = { total: 0 }],
       [conveniosVencidos = { total: 0 }],
       [totalAtivos = { total: 0 }],
+      [valorFaturadoPatients = { total: 0 }],
+      [valorFaturadoPatientsRenovated = { total: 0 }],
     ] = await Promise.all([
       // Pacientes ativados pela primeira vez no período - EXATA igual ao dashboard
       db
@@ -436,6 +476,35 @@ export const getManagement = async ({
             )`,
           ),
         ),
+
+      db
+        .select({
+          total: sum(patientsTable.priceInCents),
+        })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.clinicId, targetClinicIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' >= ${fromDate}`,
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' <= ${toDate}`,
+          ),
+        ),
+
+      db
+        .select({
+          total: sum(patientsTable.priceInCentsRenovation),
+        })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.clinicId, targetClinicIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${fromDate}`,
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${toDate}`,
+            sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+          ),
+        ),
     ]);
 
     // Calcular faturamento exatamente igual ao dashboard
@@ -451,11 +520,16 @@ export const getManagement = async ({
     const totalEnterpriseTotal =
       totalEnterprise.total + totalEnterpriseRenovated.total;
 
-    // Calcular faturamento total usando a mesma lógica do dashboard
-    const faturamentoTotal =
-      (totalPatientsTotal - totalEnterpriseTotal) *
-        Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
-      totalEnterpriseTotal * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
+    // const faturamentoEstimadoReais =
+    //   (totalPatientsTotal - totalEnterpriseTotal) *
+    //     Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
+    //   totalEnterpriseTotal * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
+
+    const faturamentoPacientesCentavos =
+      Number(valorFaturadoPatients.total ?? 0) +
+      Number(valorFaturadoPatientsRenovated.total ?? 0);
+
+    const faturamentoTotal = faturamentoPacientesCentavos;
 
     // Calcular faturamento mensal
     const faturamentoMensal = await getFaturamentoMensal(

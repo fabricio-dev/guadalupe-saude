@@ -3,7 +3,7 @@
 import { DollarSign, Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/helpers/currency";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 interface StatsCardsVendedoresProps {
   totalVendas: number;
@@ -26,7 +26,7 @@ const StatsCardsVendedores = ({
     },
     {
       title: "Faturamento Total",
-      value: formatCurrency(faturamentoTotal),
+      value: formatCurrencyInCents(faturamentoTotal),
       icon: DollarSign,
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",

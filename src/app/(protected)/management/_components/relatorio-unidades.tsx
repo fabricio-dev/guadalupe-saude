@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/helpers/currency";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 import ConveniosVencidosRenovadosChart from "./convenios-vencidos-renovados-chart";
 import { DatePicker } from "./date-picker";
@@ -373,7 +373,7 @@ const RelatorioUnidades = ({
                   <div className="print-stat-item">
                     <span className="print-stat-label">Faturamento Total:</span>
                     <span className="print-stat-value">
-                      {formatCurrency(data.faturamentoTotal)}
+                      {formatCurrencyInCents(data.faturamentoTotal)}
                     </span>
                   </div>
                   <div className="print-stat-item">

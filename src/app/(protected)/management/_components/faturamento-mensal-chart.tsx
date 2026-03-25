@@ -13,7 +13,7 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatCurrency } from "@/helpers/currency";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 interface FaturamentoMensalData {
   mes: string;
@@ -79,7 +79,7 @@ const FaturamentoMensalChart = ({
             <div className="flex items-center gap-2">
               <div className="h-3 w-3 rounded-full bg-[#3b82f6]" />
               <span className="text-sm">
-                Faturamento: {formatCurrency(payload[0]?.value || 0)}
+                Faturamento: {formatCurrencyInCents(payload[0]?.value || 0)}
               </span>
             </div>
           </div>
@@ -97,7 +97,7 @@ const FaturamentoMensalChart = ({
         </CardTitle>
         {hasValidData && (
           <p className="text-muted-foreground text-sm">
-            Total: {formatCurrency(totalFaturamento)} | {data.length}{" "}
+            Total: {formatCurrencyInCents(totalFaturamento)} | {data.length}{" "}
             {data.length === 1 ? "mês" : "meses"}
           </p>
         )}
@@ -127,7 +127,7 @@ const FaturamentoMensalChart = ({
                   />
                   <YAxis
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => formatCurrency(value)}
+                    tickFormatter={(value) => formatCurrencyInCents(value)}
                     width={80}
                   />
                   <Tooltip content={<CustomTooltip />} />
@@ -167,7 +167,7 @@ const FaturamentoMensalChart = ({
                   tick={{ fontSize: 10, fill: "#374151" }}
                   axisLine={{ stroke: "#e5e7eb" }}
                   tickLine={{ stroke: "#e5e7eb" }}
-                  tickFormatter={(value) => formatCurrency(value)}
+                  tickFormatter={(value) => formatCurrencyInCents(value)}
                 />
                 <Bar
                   dataKey="faturamento"

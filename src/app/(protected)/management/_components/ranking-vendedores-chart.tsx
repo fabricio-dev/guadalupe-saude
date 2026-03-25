@@ -10,7 +10,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency } from "@/helpers/currency";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 interface VendedorData {
   nome: string;
@@ -122,7 +122,7 @@ const RankingVendedoresChart = ({
                 tick={{ fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(value) => formatCurrency(value)}
+                tickFormatter={(value) => formatCurrencyInCents(value)}
               />
               <ChartTooltip
                 content={
@@ -133,7 +133,7 @@ const RankingVendedoresChart = ({
                       return [
                         <div key="tooltip" className="space-y-1">
                           <div>
-                            Faturamento: {formatCurrency(Number(value))}
+                            Faturamento: {formatCurrencyInCents(Number(value))}
                           </div>
                           <div>Vendas: {vendas}</div>
                         </div>,
@@ -176,7 +176,7 @@ const RankingVendedoresChart = ({
               tick={{ fontSize: 10, fill: "#374151" }}
               axisLine={{ stroke: "#e5e7eb" }}
               tickLine={{ stroke: "#e5e7eb" }}
-              tickFormatter={(value) => formatCurrency(value)}
+              tickFormatter={(value) => formatCurrencyInCents(value)}
             />
             <Bar
               dataKey="faturamento"

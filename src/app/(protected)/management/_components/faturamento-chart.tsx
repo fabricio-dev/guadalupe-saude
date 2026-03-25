@@ -10,7 +10,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatCurrency } from "@/helpers/currency";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 interface FaturamentoData {
   month: string;
@@ -115,7 +115,7 @@ const FaturamentoChart = ({
                 tick={{ fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(value) => formatCurrency(value)}
+                tickFormatter={(value) => formatCurrencyInCents(value)}
               />
               <ChartTooltip
                 content={
@@ -126,7 +126,7 @@ const FaturamentoChart = ({
                       const label = isWithinPeriod
                         ? "Faturamento (Período)"
                         : "Faturamento (Contexto)";
-                      return [formatCurrency(Number(value)), label];
+                      return [formatCurrencyInCents(Number(value)), label];
                     }}
                     labelFormatter={(label) => `Mês: ${label}`}
                   />
@@ -165,7 +165,7 @@ const FaturamentoChart = ({
               tick={{ fontSize: 12 }}
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => formatCurrency(value)}
+              tickFormatter={(value) => formatCurrencyInCents(value)}
             />
             <Bar dataKey="faturamento" radius={[4, 4, 0, 0]}>
               {chartData.map((entry, index) => (

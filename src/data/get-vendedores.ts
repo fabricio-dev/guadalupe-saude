@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { and, count, eq, inArray, sql } from "drizzle-orm";
+import { and, count, eq, inArray, sql, sum } from "drizzle-orm";
 
 import { db } from "@/db";
 import { patientsTable, sellersTable, usersToClinicsTable } from "@/db/schema";
@@ -85,6 +85,8 @@ export async function getVendedores({
     const [
       [totalPatientsNovos = { total: 0 }],
       [totalPatientsRenovados = { total: 0 }],
+      [totalFaturamentoPatients = { total: 0 }],
+      [totalFaturamentoPatientsRenovated = { total: 0 }],
       [totalEnterprise = { total: 0 }],
       [totalEnterpriseRenovados = { total: 0 }],
       patientsNovos,
@@ -120,7 +122,33 @@ export async function getVendedores({
             sql`${patientsTable.reactivatedAt} IS NOT NULL`,
           ),
         ),
-
+      db
+        .select({
+          total: sum(patientsTable.priceInCents),
+        })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.sellerId, vendedorIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' >= ${fromDate}`,
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' <= ${toDate}`,
+          ),
+        ),
+      db
+        .select({
+          total: sum(patientsTable.priceInCentsRenovation),
+        })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.sellerId, vendedorIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${fromDate}`,
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${toDate}`,
+            sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+          ),
+        ),
       // Pacientes enterprise novos
       db
         .select({
@@ -192,9 +220,6 @@ export async function getVendedores({
       }),
     ]);
 
-    // Combinar os dois arrays de pacientes
-    const patients = [...patientsNovos, ...patientsRenovados];
-
     // Calcular totais usando a mesma lógica do get-management
     const totalVendas = totalPatientsNovos.total + totalPatientsRenovados.total;
     const totalEnterpriseTotal =
@@ -202,9 +227,8 @@ export async function getVendedores({
 
     // Calcular faturamento usando a mesma lógica do get-management
     const faturamentoTotal =
-      (totalVendas - totalEnterpriseTotal) *
-        Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
-      totalEnterpriseTotal * Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
+      Number(totalFaturamentoPatients?.total ?? 0) +
+      Number(totalFaturamentoPatientsRenovated?.total ?? 0);
 
     const ticketMedio = totalVendas > 0 ? faturamentoTotal / totalVendas : 0;
 
@@ -237,18 +261,21 @@ export async function getVendedores({
           .length +
         vendedorPatientsRenovados.filter((p) => p.cardType === "enterprise")
           .length;
-      const conveniosIndividuais = totalConvenios - conveniosEmpresariais;
 
       // Calcular faturamento igual ao faturamento total
       const faturamento =
-        conveniosIndividuais *
-          Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE) +
-        conveniosEmpresariais *
-          Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE);
+        vendedorPatientsNovos.reduce(
+          (sum, p) => sum + Number(p.priceInCents ?? 0),
+          0,
+        ) +
+        vendedorPatientsRenovados.reduce(
+          (sum, p) => sum + Number(p.priceInCentsRenovation ?? 0),
+          0,
+        );
 
       // Meta mockada (pode ser implementada no banco depois)
       const meta = 100000; // Meta padrão
-      const percentualMeta = meta > 0 ? (faturamento / meta) * 100 : 0;
+      const percentualMeta = meta > 0 ? (faturamento / meta) * 100 : 0; 
 
       return {
         nome: vendedor.name,
@@ -278,8 +305,12 @@ export async function getVendedores({
     // Comissões mockadas (5% do faturamento)
     const comissoesTotais = faturamentoTotal * 0.05;
 
-    // Gerar faturamento mensal
-    const faturamentoMensal = generateMonthlyRevenue(patients, vendedorId);
+    // Gerar faturamento mensal (calculado no banco, igual ao management)
+    const faturamentoMensal = await getFaturamentoMensalBySellers({
+      sellerIds: vendedorIds,
+      from,
+      to,
+    });
 
     return {
       totalVendas,
@@ -305,65 +336,97 @@ export async function getVendedores({
   }
 }
 
-// Função para gerar faturamento mensal
-function generateMonthlyRevenue(
-  patients: Array<{
-    activeAt: Date | null;
-    reactivatedAt: Date | null;
-    cardType: string;
-    numberCards?: number | null;
-    sellerId: string | null;
-    [key: string]: unknown;
-  }>,
-  vendedorId?: string,
-) {
-  const monthlyData: { [key: string]: number } = {};
+async function getFaturamentoMensalBySellers({
+  sellerIds,
+  from,
+  to,
+}: {
+  sellerIds: string[];
+  from: string;
+  to: string;
+}): Promise<Array<{ mes: string; faturamento: number }>> {
+  if (sellerIds.length === 0) return [];
 
-  // Filtrar pacientes pelo vendedor se especificado
-  const filteredPatients =
-    vendedorId && vendedorId !== "all"
-      ? patients.filter((p) => p.sellerId === vendedorId)
-      : patients;
+  const startDate = dayjs(from);
+  const endDate = dayjs(to);
 
-  filteredPatients.forEach((patient) => {
-    // Usar activeAt ou reactivatedAt para determinar quando o paciente gerou faturamento
-    const relevantDate = patient.reactivatedAt || patient.activeAt;
+  const fromDate = dayjs.tz(`${from} 00:00:00`, "America/Sao_Paulo").utc().toDate();
+  const toDate = dayjs.tz(`${to} 23:59:59`, "America/Sao_Paulo").utc().toDate();
 
-    if (!relevantDate || !patient.sellerId) return;
+  const monthsDiff = endDate.diff(startDate, "month") + 1;
 
-    const date = new Date(relevantDate);
-    const monthKey = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
+  let adjustedStartDate = startDate.startOf("month");
+  let adjustedEndDate = endDate.startOf("month");
 
-    if (!monthlyData[monthKey]) {
-      monthlyData[monthKey] = 0;
-    }
-
-    // Usar a mesma lógica de faturamento dos outros cálculos (sem multiplicar por numberCards) faturaento grafico vendedor individualmente
-    const valorBase =
-      patient.cardType === "enterprise"
-        ? Number(process.env.NEXT_PUBLIC_ENTERPRISE_VALUE)
-        : Number(process.env.NEXT_PUBLIC_INDIVIDUAL_VALUE);
-    monthlyData[monthKey] += valorBase;
-  });
-
-  // Se não há dados mensais, retornar array vazio
-  if (Object.keys(monthlyData).length === 0) {
-    return [];
+  if (monthsDiff < 3) {
+    adjustedStartDate = startDate.subtract(1, "month").startOf("month");
+    adjustedEndDate = endDate.add(1, "month").startOf("month");
   }
 
-  // Converter para array e ordenar por data
-  const monthlyArray = Object.entries(monthlyData)
-    .map(([mes, faturamento]) => ({
-      mes,
-      faturamento,
-    }))
-    .sort((a, b) => {
-      const [monthA, yearA] = a.mes.split("/");
-      const [monthB, yearB] = b.mes.split("/");
-      const dateA = new Date(2000 + parseInt(yearA), parseInt(monthA) - 1);
-      const dateB = new Date(2000 + parseInt(yearB), parseInt(monthB) - 1);
-      return dateA.getTime() - dateB.getTime();
+  const monthly: Array<{ mes: string; faturamento: number }> = [];
+  let currentDate = adjustedStartDate;
+
+  while (
+    currentDate.isBefore(adjustedEndDate) ||
+    currentDate.isSame(adjustedEndDate, "month")
+  ) {
+    const monthStart = currentDate.startOf("month").toDate();
+    const monthEnd = currentDate.endOf("month").toDate();
+
+    const isWithinOriginalPeriod =
+      (currentDate.isAfter(startDate.startOf("month")) ||
+        currentDate.isSame(startDate.startOf("month"), "month")) &&
+      (currentDate.isBefore(endDate.startOf("month")) ||
+        currentDate.isSame(endDate.startOf("month"), "month"));
+
+    const periodStart = isWithinOriginalPeriod
+      ? monthStart < fromDate
+        ? fromDate
+        : monthStart
+      : monthStart;
+
+    const periodEnd = isWithinOriginalPeriod
+      ? monthEnd > toDate
+        ? toDate
+        : monthEnd
+      : monthEnd;
+
+    const [[novos], [renovados]] = await Promise.all([
+      db
+        .select({ total: sum(patientsTable.priceInCents) })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.sellerId, sellerIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' >= ${periodStart}`,
+            sql`${patientsTable.activeAt} AT TIME ZONE 'UTC' <= ${periodEnd}`,
+          ),
+        ),
+      db
+        .select({ total: sum(patientsTable.priceInCentsRenovation) })
+        .from(patientsTable)
+        .where(
+          and(
+            inArray(patientsTable.sellerId, sellerIds),
+            eq(patientsTable.isActive, true),
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' >= ${periodStart}`,
+            sql`${patientsTable.reactivatedAt} AT TIME ZONE 'UTC' <= ${periodEnd}`,
+            sql`${patientsTable.reactivatedAt} IS NOT NULL`,
+          ),
+        ),
+    ]);
+
+    const faturamentoMes =
+      Number(novos?.total ?? 0) + Number(renovados?.total ?? 0);
+
+    monthly.push({
+      mes: currentDate.tz("America/Sao_Paulo").format("MM/YY"),
+      faturamento: faturamentoMes,
     });
 
-  return monthlyArray;
+    currentDate = currentDate.add(1, "month");
+  }
+
+  return monthly;
 }
