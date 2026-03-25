@@ -307,7 +307,7 @@ export default function ContratoComponent({
               : "___/___/______"}
           </div>
           <div className="p-1">
-            <strong>CIDADE DO CONTRATO:</strong>{" "}
+            <strong>UNIDADE DO CONTRATO:</strong>{" "}
             {patient.clinic?.name.toUpperCase() || "N/A"}
           </div>
         </div>
