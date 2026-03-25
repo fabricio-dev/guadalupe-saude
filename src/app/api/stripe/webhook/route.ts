@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/db";
-import { patientsTable } from "@/db/schema";
+import { clinicsTable, patientsTable } from "@/db/schema";
 
 export const runtime = "nodejs"; // importante para Stripe SDK no serverless
 
@@ -90,6 +90,29 @@ export async function POST(req: Request) {
             { status: 400 },
           );
         }
+        if (!patient.clinicId) {
+          throw new Error("Paciente sem clínica associada");
+        }
+
+        const [clinicRow] = await db
+          .select()
+          .from(clinicsTable)
+          .where(eq(clinicsTable.id, patient.clinicId))
+          .limit(1);
+
+        if (!clinicRow) {
+          throw new Error("Clínica não encontrada");
+        }
+
+        const isEnterprise = patient.cardType === "enterprise";
+
+        // preco de ativacao
+        const price = isEnterprise
+          ? clinicRow.enterpriseActivationPriceInCents
+          : clinicRow.individualActivationPriceInCents;
+        const priceRenovation = isEnterprise
+          ? clinicRow.enterpriseRenovationPriceInCents
+          : clinicRow.individualRenovationPriceInCents;
 
         const updateData: Partial<typeof patientsTable.$inferInsert> =
           //primeira ativação
@@ -107,8 +130,9 @@ export async function POST(req: Request) {
                     : null,
                 updatedAt: paidAt,
                 //updatedBy: "stripe webhook",
+                priceInCents: price, //por ser primeira ativacao
               }
-            : //renovação de convenio
+            : //renovação de convenio por regra de negocio o link de pagamento nao opera para renovacao antecipada
               {
                 paymentStatus: "PAID",
                 paidAt,
@@ -121,6 +145,7 @@ export async function POST(req: Request) {
                     ? session.payment_intent
                     : null,
                 updatedAt: paidAt,
+                priceInCentsRenovation: priceRenovation,
                 //updatedBy: "stripe webhook",
               };
 
