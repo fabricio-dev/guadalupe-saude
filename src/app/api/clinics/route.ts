@@ -1,9 +1,8 @@
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db";
-import { clinicsTable, usersToClinicsTable } from "@/db/schema";
+import { clinicsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 export async function GET() {
@@ -15,21 +14,19 @@ export async function GET() {
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-    // Buscar clínicas do usuário através da tabela de relacionamento
-    const userClinics = await db
+    // Listar todas as clínicas
+    const clinics = await db
       .select({
         id: clinicsTable.id,
         name: clinicsTable.name,
       })
-      .from(usersToClinicsTable)
-      .innerJoin(
-        clinicsTable,
-        eq(usersToClinicsTable.clinicId, clinicsTable.id),
-      )
-      .where(eq(usersToClinicsTable.userId, session.user.id));
+      .from(clinicsTable);
 
-    return NextResponse.json(userClinics);
+    return NextResponse.json(clinics);
   } catch (error) {
     console.error(error);
     return NextResponse.json(

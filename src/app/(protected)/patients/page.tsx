@@ -4,10 +4,8 @@ import utc from "dayjs/plugin/utc";
 import {
   and,
   between,
-  eq,
   gte,
   ilike,
-  inArray,
   isNotNull,
   lte,
   or,
@@ -22,7 +20,6 @@ import { Suspense } from "react";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { Button } from "@/components/ui/button";
 import {
   PageActions,
   PageContainer,
@@ -33,7 +30,7 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import { patientsTable, usersToClinicsTable } from "@/db/schema";
+import { patientsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddPatientButton from "./_components/add-patient-button";
@@ -66,31 +63,15 @@ const PatientsPage = async ({ searchParams }: PatientsPageProps) => {
   const { search, filter, dateFrom, dateTo } = await searchParams;
   const isShowingExpired = filter === "expired";
 
-  // Primeiro, buscar todas as clínicas do usuário
-  const userClinics = await db
-    .select({ clinicId: usersToClinicsTable.clinicId })
-    .from(usersToClinicsTable)
-    .where(eq(usersToClinicsTable.userId, session.user.id));
-
-  const clinicIds = userClinics.map((uc) => uc.clinicId);
-
-  // Se o usuário não tem clínicas, redirecionar para criar uma
-  if (clinicIds.length === 0) {
-    redirect("/clinics");
-  }
-
   // Construir as condições de busca
   const searchTerm = search?.trim();
 
-  // Condição base: filtrar pacientes por clínicas do usuário admin
-  const baseCondition = inArray(patientsTable.clinicId, clinicIds);
-
-  let whereCondition: SQL<unknown> = baseCondition;
+  let whereCondition: SQL<unknown> = sql`true`;
 
   // Aplicar filtro de vencidos se necessário
   if (isShowingExpired) {
     whereCondition = and(
-      baseCondition,
+      whereCondition,
       isNotNull(patientsTable.expirationDate),
       lte(patientsTable.expirationDate, new Date()),
     )!;
@@ -183,51 +164,32 @@ const PatientsPage = async ({ searchParams }: PatientsPageProps) => {
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
-          {clinicIds.length > 0 && (
-            <div className="flex items-center gap-4">
-              <Suspense fallback={<div>Carregando...</div>}>
-                <FiltersBar />
-              </Suspense>
-              <AddPatientButton />
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            <Suspense fallback={<div>Carregando...</div>}>
+              <FiltersBar />
+            </Suspense>
+            <AddPatientButton />
+          </div>
         </PageActions>
       </PageHeader>
       <PageContent>
-        {clinicIds.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Nenhuma clínica cadastrada
-            </h3>
-            <p className="mt-2 text-sm text-gray-600">
-              Você precisa cadastrar pelo menos uma clínica antes de gerenciar
-              pacientes.
-            </p>
-            <Button className="mt-4" asChild>
-              <a href="/clinics">Cadastrar Clínica</a>
-            </Button>
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Suspense fallback={<div>Carregando...</div>}>
+              <SearchPatients />
+            </Suspense>
           </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Suspense fallback={<div>Carregando...</div>}>
-                <SearchPatients />
-              </Suspense>
-            </div>
 
-            <div className="w-full">
-              <PatientsTable
-                patients={patients.map((patient) => ({
-                  ...patient,
-                  birthDate: patient.birthDate
-                    ? new Date(patient.birthDate)
-                    : null,
-                  // expirationDate: patient.expirationDate, nao sei quando foi inserido isso
-                }))}
-              />
-            </div>
+          <div className="w-full">
+            <PatientsTable
+              patients={patients.map((patient) => ({
+                ...patient,
+                birthDate: patient.birthDate ? new Date(patient.birthDate) : null,
+                // expirationDate: patient.expirationDate, nao sei quando foi inserido isso
+              }))}
+            />
           </div>
-        )}
+        </div>
       </PageContent>
     </PageContainer>
   );

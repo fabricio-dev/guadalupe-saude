@@ -1,9 +1,9 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { db } from "@/db";
-import { sellersTable, usersToClinicsTable } from "@/db/schema";
+import { sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 export async function GET(request: Request) {
@@ -15,37 +15,18 @@ export async function GET(request: Request) {
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const clinicIdFilter = searchParams.get("clinicId");
 
-    // Primeiro, buscar todas as clínicas do usuário
-    const userClinics = await db
-      .select({ clinicId: usersToClinicsTable.clinicId })
-      .from(usersToClinicsTable)
-      .where(eq(usersToClinicsTable.userId, session.user.id));
-
-    const userClinicIds = userClinics.map((uc) => uc.clinicId);
-
-    if (userClinicIds.length === 0) {
-      return NextResponse.json([]);
-    }
-
-    // Se um clinicId específico foi solicitado, verificar se o usuário tem acesso
-    let clinicIds = userClinicIds;
-    if (clinicIdFilter) {
-      if (!userClinicIds.includes(clinicIdFilter)) {
-        return NextResponse.json(
-          { error: "Unauthorized clinic access" },
-          { status: 403 },
-        );
-      }
-      clinicIds = [clinicIdFilter];
-    }
-
-    // Buscar vendedores das clínicas permitidas
+    // Buscar vendedores (todas as clínicas para admin, com filtro opcional por clinicId)
     const sellers = await db.query.sellersTable.findMany({
-      where: inArray(sellersTable.clinicId, clinicIds),
+      where: clinicIdFilter
+        ? eq(sellersTable.clinicId, clinicIdFilter)
+        : undefined,
       columns: {
         id: true,
         name: true,

@@ -6,7 +6,7 @@ export async function GET() {
   try {
     // Buscar o usuário admin (deve existir apenas 1)
     const adminUser = await db.query.usersTable.findFirst({
-      where: (user, { eq }) => eq(user.role, "admin"),
+      where: (user, { eq }) => eq(user.role, "admin"), /// mudar para todos os admins
     });
 
     if (!adminUser) {

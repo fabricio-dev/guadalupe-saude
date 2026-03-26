@@ -12,7 +12,6 @@ import {
   clinicsTable,
   patientsTable,
   sellersTable,
-  usersToClinicsTable,
   whatsappNotificationsTable,
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -51,21 +50,7 @@ export const activatePatient = actionClient
 
     // Verificar permissões baseado no role do usuário
     if (session.user.role === "admin") {
-      // Para admins: verificar se o paciente pertence a alguma clínica do admin
-      const userClinics = await db
-        .select({ clinicId: usersToClinicsTable.clinicId })
-        .from(usersToClinicsTable)
-        .where(eq(usersToClinicsTable.userId, session.user.id));
-
-      const clinicIds = userClinics.map((uc) => uc.clinicId);
-
-      if (clinicIds.length === 0) {
-        throw new Error("Você não está associado a nenhuma clínica");
-      }
-
-      if (!patient.clinicId || !clinicIds.includes(patient.clinicId)) {
-        throw new Error("Você não tem permissão para ativar este paciente");
-      }
+      // Admin: acesso total (sem escopo por clínica)
     } else if (session.user.role === "gestor") {
       // Para gestores: verificar se o paciente pertence à clínica do gestor
       const gestor = await db
