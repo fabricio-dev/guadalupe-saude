@@ -35,6 +35,7 @@ export const upsertClinic = actionClient
           enterpriseRenovationPriceInCents:
             parsedInput.enterpriseRenovationPriceInCents,
           updatedAt: new Date(),
+          editedBy: session.user.id,
         })
         .where(eq(clinicsTable.id, parsedInput.id));
 
@@ -53,6 +54,7 @@ export const upsertClinic = actionClient
             parsedInput.enterpriseActivationPriceInCents,
           enterpriseRenovationPriceInCents:
             parsedInput.enterpriseRenovationPriceInCents,
+          editedBy: session.user.id,
         })
         .returning();
 

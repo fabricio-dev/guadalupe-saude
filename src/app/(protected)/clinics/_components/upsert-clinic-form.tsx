@@ -65,6 +65,7 @@ const UpsertClinicForm = ({ clinic, onSuccess }: UpsertClinicFormProps) => {
         (clinic?.enterpriseRenovationPriceInCents ?? 0) / 100,
     },
   });
+  const isEditing = Boolean(clinic);
 
   const upsertClinicAction = useAction(upsertClinic, {
     onSuccess: () => {
@@ -283,7 +284,10 @@ const UpsertClinicForm = ({ clinic, onSuccess }: UpsertClinicFormProps) => {
           <DialogFooter>
             <Button
               type="submit"
-              disabled={upsertClinicAction.isExecuting}
+              disabled={
+                upsertClinicAction.isExecuting ||
+                (isEditing && !form.formState.isDirty)
+              }
               className="bg-sky-600/90 hover:bg-sky-700"
             >
               {upsertClinicAction.isExecuting

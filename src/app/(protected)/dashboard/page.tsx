@@ -49,6 +49,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     }
   }
 
+  // tirar essa logica depois para multi adm mas precias de verificacao ante de mandar para o gatdashboard se nao0 da erro
   if (!session?.user.clinic) {
     redirect("/clinics");
   }

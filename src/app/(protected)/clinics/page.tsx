@@ -1,4 +1,4 @@
-import { and, eq, ilike } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -13,7 +13,7 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import { clinicsTable, usersToClinicsTable } from "@/db/schema";
+import { clinicsTable, usersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddClinicButton from "./_components/add-clinic-button";
@@ -42,22 +42,15 @@ const ClinicsPage = async ({ searchParams }: ClinicsPageProps) => {
   const { search } = await searchParams;
   const searchTerm = search?.trim();
 
-  let whereCondition = eq(usersToClinicsTable.userId, session.user.id);
-
-  if (searchTerm) {
-    whereCondition = and(
-      eq(usersToClinicsTable.userId, session.user.id),
-      ilike(clinicsTable.name, `%${searchTerm}%`),
-    ) as typeof whereCondition;
-  }
-
-  // Buscar clínicas do usuário
+  // Admin: listar todas as clínicas (sem depender de usersToClinics)
   const userClinics = await db
     .select({
       id: clinicsTable.id,
       name: clinicsTable.name,
       createdAt: clinicsTable.createdAt,
       updatedAt: clinicsTable.updatedAt,
+      editedBy: clinicsTable.editedBy,
+      editedByName: usersTable.name,
       individualActivationPriceInCents:
         clinicsTable.individualActivationPriceInCents,
       individualRenovationPriceInCents:
@@ -67,9 +60,11 @@ const ClinicsPage = async ({ searchParams }: ClinicsPageProps) => {
       enterpriseRenovationPriceInCents:
         clinicsTable.enterpriseRenovationPriceInCents,
     })
-    .from(usersToClinicsTable)
-    .innerJoin(clinicsTable, eq(usersToClinicsTable.clinicId, clinicsTable.id))
-    .where(whereCondition);
+    .from(clinicsTable)
+    .leftJoin(usersTable, eq(clinicsTable.editedBy, usersTable.id))
+    .where(
+      searchTerm ? ilike(clinicsTable.name, `%${searchTerm}%`) : undefined,
+    );
 
   return (
     <PageContainer>

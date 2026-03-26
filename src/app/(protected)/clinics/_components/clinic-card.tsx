@@ -11,16 +11,37 @@ import { clinicsTable } from "@/db/schema";
 
 import UpsertClinicForm from "./upsert-clinic-form";
 
-interface ClinicCardProps {
-  clinic: typeof clinicsTable.$inferSelect;
-}
+type ClinicForCard = Pick<
+  typeof clinicsTable.$inferSelect,
+  | "id"
+  | "name"
+  | "createdAt"
+  | "updatedAt"
+  | "editedBy"
+  | "individualActivationPriceInCents"
+  | "individualRenovationPriceInCents"
+  | "enterpriseActivationPriceInCents"
+  | "enterpriseRenovationPriceInCents"
+> & {
+  editedByName?: string | null;
+};
 
+interface ClinicCardProps {
+  clinic: ClinicForCard;
+}
 const ClinicCard = ({ clinic }: ClinicCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date?: Date | null) => {
+    if (!date) return "-";
     return dayjs(date).format("DD/MM/YYYY");
   };
+
+  const editedByLabel = clinic.editedByName?.trim()
+    ? `Atualizada por: ${clinic.editedByName}`
+    : clinic.editedBy?.trim()
+      ? `Atualizada por: ${clinic.editedBy}`
+      : "";
 
   return (
     <Card className="transition-shadow hover:shadow-md">
@@ -32,11 +53,13 @@ const ClinicCard = ({ clinic }: ClinicCardProps) => {
           <p>
             <strong>Criada em:</strong> {formatDate(clinic.createdAt)}
           </p>
+
           {clinic.updatedAt && clinic.updatedAt !== clinic.createdAt && (
             <p>
               <strong>Atualizada em:</strong> {formatDate(clinic.updatedAt)}
             </p>
           )}
+          {editedByLabel ? <p>{editedByLabel}</p> : null}
         </div>
         <div className="pt-2">
           <Button
