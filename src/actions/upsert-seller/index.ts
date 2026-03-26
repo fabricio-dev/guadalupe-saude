@@ -1,4 +1,6 @@
 "use server";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -10,10 +12,13 @@ import { actionClient } from "@/lib/next-safe-action";
 
 import { upsertSellerSchema } from "./schema";
 
+dayjs.extend(utc);
+
 export const upsertSeller = actionClient
   .schema(upsertSellerSchema)
   .action(async ({ parsedInput }) => {
     const session = await auth.api.getSession({ headers: await headers() });
+    const nowUtc = dayjs.utc().toDate();
 
     if (session?.user.role === "admin" || session?.user.role === "gestor") {
       if (!parsedInput.clinicId) {
@@ -43,11 +48,17 @@ export const upsertSeller = actionClient
         .values({
           ...parsedInput,
           id: parsedInput.id,
-          // mudei para o id para testar
+          createdAt: nowUtc,
+          editedBy: session.user.id,
+          editedAt: nowUtc,
         })
         .onConflictDoUpdate({
           target: [sellersTable.id],
-          set: { ...parsedInput },
+          set: {
+            ...parsedInput,
+            editedBy: session.user.id,
+            editedAt: nowUtc,
+          },
         });
       revalidatePath("/sellers");
       revalidatePath("/gerente/sellers-gestor");

@@ -62,7 +62,9 @@ const formSchema = z.object({
 
 interface UpsertSellerFormProps {
   isOpen: boolean;
-  seller?: typeof sellersTable.$inferSelect;
+  seller?: (typeof sellersTable.$inferSelect & {
+    editedByName?: string | null;
+  });
   onSuccess?: () => void;
 }
 
@@ -160,6 +162,20 @@ const UpsertSellerForm = ({
             : "Adicione um novo vendedor."}
         </DialogDescription>
       </DialogHeader>
+      {seller && (
+        <div className="rounded-md border border-sky-100 bg-sky-50/60 p-3 text-sm">
+          <p className="text-sky-900">
+            <span className="font-medium">Editado por:</span>{" "}
+            {seller.editedByName ?? seller.editedBy ?? "Nao informado"}
+          </p>
+          <p className="text-sky-900">
+            <span className="font-medium">Editado em:</span>{" "}
+            {seller.editedAt
+              ? new Date(seller.editedAt).toLocaleString("pt-BR")
+              : "Nao informado"}
+          </p>
+        </div>
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <FormField

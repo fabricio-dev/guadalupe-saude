@@ -107,6 +107,9 @@ export const sellersTable = pgTable("sellers", {
   percentage: integer("percentage").notNull().default(10),
   pixKey: text("pix_key"),
   pixKeyType: text("pix_key_type"),
+  editedBy: text("edited_by"),
+  editedAt: timestamp("edited_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   clinicId: uuid("clinic_id").references(() => clinicsTable.id, {
     onDelete: "cascade",
   }),
