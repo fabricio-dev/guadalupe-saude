@@ -22,7 +22,6 @@ import {
   clinicsTable,
   patientsTable,
   sellersTable,
-  usersToClinicsTable,
 } from "@/db/schema";
 
 // Configurar plugins do dayjs para lidar corretamente com fusos horários
@@ -32,17 +31,9 @@ dayjs.extend(timezone);
 interface Params {
   from: string;
   to: string;
-  session: {
-    user: {
-      id: string;
-      clinic: {
-        id: string;
-      };
-    };
-  };
 }
 
-export const getDashboard = async ({ from, to, session }: Params) => {
+export const getDashboard = async ({ from, to }: Params) => {
   // Todas as datas agora em UTC para compatibilidade com o banco
   const chartSatartDate = dayjs()
     .utc()
@@ -101,9 +92,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.isActive, true),
           gte(patientsTable.activeAt, fromDate),
@@ -120,9 +110,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.isActive, true),
           gte(patientsTable.reactivatedAt, fromDate),
@@ -140,9 +129,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.isActive, true),
           gte(patientsTable.reactivatedAt, fromDate),
@@ -160,9 +148,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.isActive, true),
           gte(patientsTable.activeAt, fromDate),
@@ -180,9 +167,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
         inArray(
           sellersTable.clinicId,
           db
-            .select({ clinicId: usersToClinicsTable.clinicId })
-            .from(usersToClinicsTable)
-            .where(eq(usersToClinicsTable.userId, session.user.id)),
+            .select({ clinicId: clinicsTable.id })
+            .from(clinicsTable),
         ),
       ),
     // TODO: Implementa a query para o total de clinicas
@@ -195,9 +181,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
         inArray(
           clinicsTable.id,
           db
-            .select({ clinicId: usersToClinicsTable.clinicId })
-            .from(usersToClinicsTable)
-            .where(eq(usersToClinicsTable.userId, session.user.id)),
+            .select({ clinicId: clinicsTable.id })
+            .from(clinicsTable),
         ),
       ),
     // TODO: Implementa a query para o total de pacientes de empresas
@@ -212,9 +197,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
             //pega so o covenios da clinica do usuario logado
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.cardType, "enterprise"),
           eq(patientsTable.isActive, true),
@@ -233,9 +217,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
             //pega so o covenios da clinica do usuario logado
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.cardType, "enterprise"),
           eq(patientsTable.isActive, true),
@@ -268,9 +251,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
         inArray(
           sellersTable.clinicId,
           db
-            .select({ clinicId: usersToClinicsTable.clinicId })
-            .from(usersToClinicsTable)
-            .where(eq(usersToClinicsTable.userId, session.user.id)),
+            .select({ clinicId: clinicsTable.id })
+            .from(clinicsTable),
         ),
       )
       .groupBy(sellersTable.id, clinicsTable.name)
@@ -290,9 +272,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
           eq(patientsTable.isActive, true),
         ),
@@ -306,9 +287,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
         inArray(
           patientsTable.clinicId,
           db
-            .select({ clinicId: usersToClinicsTable.clinicId })
-            .from(usersToClinicsTable)
-            .where(eq(usersToClinicsTable.userId, session.user.id)),
+            .select({ clinicId: clinicsTable.id })
+            .from(clinicsTable),
         ),
         gte(patientsTable.expirationDate, regeExpiratedDate),
         lte(patientsTable.expirationDate, regeExpiratedEndDate),
@@ -337,9 +317,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
             inArray(
               patientsTable.clinicId,
               db
-                .select({ clinicId: usersToClinicsTable.clinicId })
-                .from(usersToClinicsTable)
-                .where(eq(usersToClinicsTable.userId, session.user.id)),
+                .select({ clinicId: clinicsTable.id })
+                .from(clinicsTable),
             ),
             gte(patientsTable.activeAt, chartSatartDate),
             lte(patientsTable.activeAt, chartEndDate),
@@ -368,9 +347,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
             inArray(
               patientsTable.clinicId,
               db
-                .select({ clinicId: usersToClinicsTable.clinicId })
-                .from(usersToClinicsTable)
-                .where(eq(usersToClinicsTable.userId, session.user.id)),
+                .select({ clinicId: clinicsTable.id })
+                .from(clinicsTable),
             ),
             gte(patientsTable.reactivatedAt, chartSatartDate),
             lte(patientsTable.reactivatedAt, chartEndDate),
@@ -439,9 +417,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
         ),
       ),
@@ -459,9 +436,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
         ),
       ),
@@ -487,9 +463,8 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           inArray(
             patientsTable.clinicId,
             db
-              .select({ clinicId: usersToClinicsTable.clinicId })
-              .from(usersToClinicsTable)
-              .where(eq(usersToClinicsTable.userId, session.user.id)),
+              .select({ clinicId: clinicsTable.id })
+              .from(clinicsTable),
           ),
         ),
       ),

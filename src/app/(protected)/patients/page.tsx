@@ -30,7 +30,7 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import { patientsTable } from "@/db/schema";
+import { clinicsTable, patientsTable, sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddPatientButton from "./_components/add-patient-button";
@@ -57,6 +57,18 @@ const PatientsPage = async ({ searchParams }: PatientsPageProps) => {
   }
   if (session.user.role !== "admin") {
     redirect("/vendedor/dashboard-seller");
+  }
+
+  const [clinics, sellers] = await Promise.all([
+    db.select({ id: clinicsTable.id }).from(clinicsTable).limit(1),
+    db.select({ id: sellersTable.id }).from(sellersTable).limit(1),
+  ]);
+
+  const hasClinics = clinics.length > 0;
+  const hasSellers = sellers.length > 0;
+
+  if (!hasClinics) {
+    redirect("/clinics");
   }
 
   // Aguardar searchParams antes de usar
@@ -168,12 +180,18 @@ const PatientsPage = async ({ searchParams }: PatientsPageProps) => {
             <Suspense fallback={<div>Carregando...</div>}>
               <FiltersBar />
             </Suspense>
-            <AddPatientButton />
+            {hasSellers && <AddPatientButton />}
           </div>
         </PageActions>
       </PageHeader>
       <PageContent>
         <div className="space-y-6">
+          {!hasSellers && (
+            <div className="rounded-md border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900">
+              Cadastre pelo menos um vendedor antes de adicionar pacientes.
+            </div>
+          )}
+
           <div className="grid gap-6 md:grid-cols-2">
             <Suspense fallback={<div>Carregando...</div>}>
               <SearchPatients />

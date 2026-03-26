@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
-import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -20,12 +20,7 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import {
-  clinicsTable,
-  patientsTable,
-  sellersTable,
-  usersToClinicsTable,
-} from "@/db/schema";
+import { clinicsTable, patientsTable, sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { DatePicker } from "../dashboard/_components/date-picker";
@@ -60,23 +55,15 @@ const SellersPage = async ({ searchParams }: SellersPageProps) => {
       `/sellers?from=${dayjs().subtract(1, "month").format("YYYY-MM-DD")}&to=${dayjs().format("YYYY-MM-DD")}`,
     );
   }
-
-  // Buscar todas as clínicas do usuário
-  const userClinics = await db
-    .select({ clinicId: usersToClinicsTable.clinicId })
-    .from(usersToClinicsTable)
-    .where(eq(usersToClinicsTable.userId, session.user.id));
-
-  const clinicIds = userClinics.map((uc) => uc.clinicId);
-
-  // Se o usuário não tem clínicas, redirecionar para criar uma
-  if (clinicIds.length === 0) {
+  const clinics = await db.select().from(clinicsTable);
+  if (clinics.length === 0) {
     redirect("/clinics");
   }
+
   const searchTerm = search?.trim();
 
   // Construir as condições de busca
-  let whereCondition = inArray(sellersTable.clinicId, clinicIds);
+  let whereCondition = undefined;
 
   if (searchTerm) {
     const searchConditions = or(
@@ -86,10 +73,7 @@ const SellersPage = async ({ searchParams }: SellersPageProps) => {
       ilike(sellersTable.phoneNumber, `%${searchTerm}%`),
     );
 
-    whereCondition = and(
-      inArray(sellersTable.clinicId, clinicIds),
-      searchConditions,
-    ) as typeof whereCondition;
+    whereCondition = searchConditions;
   }
 
   // Definindo datas e condições SQL considerando fuso horário brasileiro

@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import z from "zod";
 
 import { db } from "@/db";
-import { sellersTable, usersToClinicsTable } from "@/db/schema";
+import { sellersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -26,17 +26,10 @@ export const deleteSeller = actionClient
       throw new Error("Unauthorized");
     }
 
+    const isAdmin = session.user.role === "admin";
     let clinicIds: string[] = [];
 
-    if (session.user.role === "admin") {
-      // Buscar as clínicas do usuário admin
-      const userClinics = await db
-        .select({ clinicId: usersToClinicsTable.clinicId })
-        .from(usersToClinicsTable)
-        .where(eq(usersToClinicsTable.userId, session.user.id));
-
-      clinicIds = userClinics.map((uc) => uc.clinicId);
-    } else if (session.user.role === "gestor") {
+    if (session.user.role === "gestor") {
       // Buscar a clínica do gestor baseada no email do usuário logado
       const gestor = await db.query.sellersTable.findFirst({
         where: eq(sellersTable.email, session.user.email),
@@ -49,7 +42,7 @@ export const deleteSeller = actionClient
       clinicIds = [gestor.clinicId];
     }
 
-    if (clinicIds.length === 0) {
+    if (!isAdmin && clinicIds.length === 0) {
       throw new Error("Você não tem permissão para deletar este vendedor");
     }
 
@@ -62,7 +55,7 @@ export const deleteSeller = actionClient
     }
 
     // Verificar se o vendedor pertence a alguma das clínicas do usuário
-    if (!seller.clinicId || !clinicIds.includes(seller.clinicId)) {
+    if (!isAdmin && (!seller.clinicId || !clinicIds.includes(seller.clinicId))) {
       throw new Error("Você não tem permissão para deletar esse vendedor");
     }
 

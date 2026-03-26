@@ -1,4 +1,5 @@
 "use server";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
@@ -15,10 +16,26 @@ export const upsertSeller = actionClient
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (session?.user.role === "admin" || session?.user.role === "gestor") {
-      if (session?.user.role === "admin" && !session?.user.clinic?.id) {
+      if (!parsedInput.clinicId) {
         throw new Error("Clínica não encontrada");
-      } else if (session?.user.role === "gestor" && !parsedInput.clinicId) {
-        throw new Error("Clínica não encontrada");
+      }
+
+      if (session.user.role === "gestor") {
+        const [gestor] = await db
+          .select({ clinicId: sellersTable.clinicId })
+          .from(sellersTable)
+          .where(eq(sellersTable.email, session.user.email))
+          .limit(1);
+
+        if (!gestor?.clinicId) {
+          throw new Error("Gestor sem clínica vinculada");
+        }
+
+        if (parsedInput.clinicId !== gestor.clinicId) {
+          throw new Error(
+            "Você não tem permissão para cadastrar vendedor em outra clínica",
+          );
+        }
       }
 
       await db

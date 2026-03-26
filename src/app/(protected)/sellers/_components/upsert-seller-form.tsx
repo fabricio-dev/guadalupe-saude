@@ -347,7 +347,9 @@ const UpsertSellerForm = ({
             <Button
               type="submit"
               className="bg-sky-600/90 hover:bg-sky-700"
-              disabled={upsertSellerAction.isPending}
+              disabled={
+                upsertSellerAction.isPending || (Boolean(seller) && !form.formState.isDirty)
+              }
             >
               {upsertSellerAction.isPending
                 ? "Salvando..."

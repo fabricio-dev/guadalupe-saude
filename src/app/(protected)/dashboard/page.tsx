@@ -49,10 +49,6 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     }
   }
 
-  // tirar essa logica depois para multi adm mas precias de verificacao ante de mandar para o gatdashboard se nao0 da erro
-  if (!session?.user.clinic) {
-    redirect("/clinics");
-  }
   const { from, to } = await searchParams;
 
   if (!from || !to) {
@@ -77,9 +73,6 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
   } = await getDashboard({
     from,
     to,
-    session: {
-      user: { id: session.user.id, clinic: { id: session.user.clinic.id } },
-    },
   });
 
   return (
