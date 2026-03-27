@@ -20,7 +20,7 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import { clinicsTable, patientsTable, sellersTable } from "@/db/schema";
+import { clinicsTable, patientsTable, sellersTable, usersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { DatePicker } from "../dashboard-gestor/_components/date-picker";
@@ -149,6 +149,10 @@ const SellersGestorPage = async ({ searchParams }: SellersGestorPageProps) => {
       phoneNumber: sellersTable.phoneNumber,
       email: sellersTable.email,
       clinicId: sellersTable.clinicId,
+      createdAt: sellersTable.createdAt,
+      editedBy: sellersTable.editedBy,
+      editedAt: sellersTable.editedAt,
+      editedByName: usersTable.name,
       clinicName: clinicsTable.name,
       patientsCount: totalCondition,
       enterpriseCount: enterpriseTotalCondition,
@@ -166,8 +170,9 @@ const SellersGestorPage = async ({ searchParams }: SellersGestorPageProps) => {
         eq(patientsTable.isActive, true),
       ),
     )
+    .leftJoin(usersTable, eq(sellersTable.editedBy, usersTable.id))
     .where(whereCondition)
-    .groupBy(sellersTable.id, clinicsTable.name)
+    .groupBy(sellersTable.id, clinicsTable.name, usersTable.name)
     .orderBy(sql`${totalCondition} DESC`);
 
   return (
