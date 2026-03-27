@@ -4,7 +4,7 @@ import utc from "dayjs/plugin/utc";
 import { and, count, eq, inArray, sql, sum } from "drizzle-orm";
 
 import { db } from "@/db";
-import { patientsTable, sellersTable, usersToClinicsTable } from "@/db/schema";
+import { patientsTable, sellersTable } from "@/db/schema";
 
 // Configurar plugins do dayjs
 dayjs.extend(utc);
@@ -27,7 +27,7 @@ export async function getVendedores({
   to,
   clinicId,
   vendedorId,
-  session,
+  // session,
 }: GetVendedoresParams) {
   try {
     // Validar se clinicId não é "all" - essa função requer uma clínica específica
@@ -36,19 +36,19 @@ export async function getVendedores({
     }
 
     // Verificar se o usuário tem acesso à clínica especificada
-    const userClinicAccess = await db
-      .select()
-      .from(usersToClinicsTable)
-      .where(
-        and(
-          eq(usersToClinicsTable.userId, session.user.id),
-          eq(usersToClinicsTable.clinicId, clinicId),
-        ),
-      );
+    // const userClinicAccess = await db
+    //   .select()
+    //   .from(usersToClinicsTable)
+    //   .where(
+    //     and(
+    //       eq(usersToClinicsTable.userId, session.user.id),
+    //       eq(usersToClinicsTable.clinicId, clinicId),
+    //     ),
+    //   );
 
-    if (userClinicAccess.length === 0) {
-      throw new Error("Acesso negado à clínica");
-    }
+    // if (userClinicAccess.length === 0) {
+    //   throw new Error("Acesso negado à clínica");
+    // }
 
     // Buscar vendedores da clínica
     let vendedorIds: string[] = [];
@@ -275,7 +275,7 @@ export async function getVendedores({
 
       // Meta mockada (pode ser implementada no banco depois)
       const meta = 100000; // Meta padrão
-      const percentualMeta = meta > 0 ? (faturamento / meta) * 100 : 0; 
+      const percentualMeta = meta > 0 ? (faturamento / meta) * 100 : 0;
 
       return {
         nome: vendedor.name,
@@ -350,7 +350,10 @@ async function getFaturamentoMensalBySellers({
   const startDate = dayjs(from);
   const endDate = dayjs(to);
 
-  const fromDate = dayjs.tz(`${from} 00:00:00`, "America/Sao_Paulo").utc().toDate();
+  const fromDate = dayjs
+    .tz(`${from} 00:00:00`, "America/Sao_Paulo")
+    .utc()
+    .toDate();
   const toDate = dayjs.tz(`${to} 23:59:59`, "America/Sao_Paulo").utc().toDate();
 
   const monthsDiff = endDate.diff(startDate, "month") + 1;

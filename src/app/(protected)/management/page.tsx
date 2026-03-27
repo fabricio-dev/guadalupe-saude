@@ -7,6 +7,8 @@ import { PageContainer, PageContent } from "@/components/ui/page-container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getManagement } from "@/data/get-management";
 import { getVendedores } from "@/data/get-vendedores";
+import { db } from "@/db";
+import { clinicsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import RelatorioUnidades from "./_components/relatorio-unidades";
@@ -38,9 +40,6 @@ const ManagementPage = async ({ searchParams }: ManagementPageProps) => {
     }
   }
 
-  if (!session?.user.clinic?.id) {
-    redirect("/clinics");
-  }
   const params = await searchParams;
   const { from, to, clinicId, vendedorId, tab } = params;
 
@@ -55,14 +54,16 @@ const ManagementPage = async ({ searchParams }: ManagementPageProps) => {
     from,
     to,
     clinicId: clinicId || "all",
-    session,
   });
 
-  // Buscar dados de vendedores - usar a clínica do usuário se não especificada
+  const initialClinicId = (
+    await db.select({ id: clinicsTable.id }).from(clinicsTable)
+  )[0].id;
+  // Buscar dados de vendedores - usar a clínica inicial(busca a primeira clínica cadastrada) se não especificada
   const vendedoresData = await getVendedores({
     from,
     to,
-    clinicId: clinicId || session.user.clinic.id,
+    clinicId: clinicId || initialClinicId,
     vendedorId: vendedorId || "all",
     session,
   });

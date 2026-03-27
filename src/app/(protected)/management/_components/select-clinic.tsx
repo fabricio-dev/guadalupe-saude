@@ -44,8 +44,9 @@ export default function SelectClinic({
           // Se não há valor selecionado e há clínicas disponíveis, procura "Salgueiro" primeiro
           if (!value && clinicsData.length > 0 && onFirstClinicLoaded) {
             // Procurar pela clínica "Salgueiro" primeiro
-            const salgueiroClinic = clinicsData.find((clinic: Clinic) =>
-              clinic.name.toLowerCase().includes("salgueiro"),
+            const salgueiroClinic = clinicsData.find(
+              (clinic: Clinic) =>
+                clinic.name.toLowerCase().includes("salgueiro"), //ver isso
             );
 
             if (salgueiroClinic) {

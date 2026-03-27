@@ -10,23 +10,12 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 import { db } from "@/db";
-import {
-  clinicsTable,
-  patientsTable,
-  sellersTable,
-  usersToClinicsTable,
-} from "@/db/schema";
+import { clinicsTable, patientsTable, sellersTable } from "@/db/schema";
 
 interface Params {
   from: string;
   to: string;
   clinicId?: string; // "all" para todas as clínicas ou ID específico
-  session: {
-    user: {
-      id: string;
-      email: string;
-    };
-  };
 }
 
 interface PatientActivation {
@@ -274,7 +263,6 @@ export const getManagement = async ({
   from,
   to,
   clinicId = "all",
-  session,
 }: Params): Promise<ManagementData> => {
   try {
     // Definir datas considerando fuso horário brasileiro
@@ -287,13 +275,11 @@ export const getManagement = async ({
       .utc()
       .toDate();
 
-    // Buscar clínicas do usuário
-    const userClinics = await db
-      .select({ clinicId: usersToClinicsTable.clinicId })
-      .from(usersToClinicsTable)
-      .where(eq(usersToClinicsTable.userId, session.user.id));
+    const allClinics = await db
+      .select({ clinicId: clinicsTable.id })
+      .from(clinicsTable);
 
-    const clinicIds = userClinics.map((uc) => uc.clinicId);
+    const clinicIds = allClinics.map((c) => c.clinicId);
 
     // Se não tem acesso a nenhuma clínica, retornar dados vazios
     if (clinicIds.length === 0) {

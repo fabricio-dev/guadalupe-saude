@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -119,7 +119,6 @@ const baseItems = [
 ];
 
 export function AppSidebar() {
-  const router = useRouter();
   const session = authClient.useSession();
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -147,8 +146,9 @@ export function AppSidebar() {
     try {
       setIsLoggingOut(true);
       await authClient.signOut();
-      router.replace("/authentication");
-      router.refresh();
+      // Navegação completa: evita estado “preso” no cliente (cache do useSession / RSC)
+      // sem depender só de router.refresh após limpar cookies no servidor.
+      window.location.assign("/authentication");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
       toast.error("Não foi possível sair. Tente novamente.");
