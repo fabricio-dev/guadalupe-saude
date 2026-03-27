@@ -35,7 +35,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { usePermissions } from "@/hooks/use-permissions";
-import { authClient } from "@/lib/auth-client";
+import { authClient, getResolvedAuthBaseURL } from "@/lib/auth-client";
 
 // Menu items.
 const baseItems = [
@@ -146,8 +146,41 @@ export function AppSidebar() {
     try {
       setIsLoggingOut(true);
       await authClient.signOut();
-      // Navegação completa: evita estado “preso” no cliente (cache do useSession / RSC)
-      // sem depender só de router.refresh após limpar cookies no servidor.
+
+      const base = getResolvedAuthBaseURL();
+      const verify = await fetch(
+        `${base}/api/auth/get-session?disableCookieCache=true`,
+        {
+          credentials: "include",
+          headers: { accept: "application/json" },
+        },
+      );
+      let stillLoggedIn = false;
+      try {
+        const body: unknown = await verify.json();
+        stillLoggedIn =
+          !!body &&
+          typeof body === "object" &&
+          "user" in body &&
+          body.user != null;
+      } catch {
+        stillLoggedIn = false;
+      }
+
+      if (stillLoggedIn) {
+        console.error("[logout] Sessão ainda ativa após signOut.", {
+          clientBaseURL: base,
+          browserOrigin: window.location.origin,
+          getSessionStatus: verify.status,
+          hint: "Defina NEXT_PUBLIC_APP_URL igual a BETTER_AUTH_URL (URL canônica, sem www se o resto do site também for).",
+        });
+        toast.error(
+          "A sessão não foi encerrada. Confira no servidor se BETTER_AUTH_URL é exatamente a URL da barra de endereço (mesmo host, com ou sem www) e veja o console [logout] para detalhes.",
+          { duration: 14_000 },
+        );
+        return;
+      }
+
       window.location.assign("/authentication");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);

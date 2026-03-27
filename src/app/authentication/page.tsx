@@ -10,6 +10,7 @@ import SingUpForm from "./components/sing-up-form";
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
+    query: { disableCookieCache: true },
   });
 
   if (session?.user) {
