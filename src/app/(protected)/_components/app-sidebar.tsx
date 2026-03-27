@@ -11,6 +11,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -121,6 +123,7 @@ export function AppSidebar() {
   const session = authClient.useSession();
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   // const { isAdmin, userRole } = usePermissions(); mudei par o de baixo
   const { isAdmin, isGestor } = usePermissions();
 
@@ -139,13 +142,19 @@ export function AppSidebar() {
   });
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/authentication");
-        },
-      },
-    });
+    if (isLoggingOut) return;
+
+    try {
+      setIsLoggingOut(true);
+      await authClient.signOut();
+      router.replace("/authentication");
+      router.refresh();
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast.error("Não foi possível sair. Tente novamente.");
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const handleMenuItemClick = () => {
@@ -218,9 +227,16 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+                <DropdownMenuItem
+                  variant="destructive"
+                  disabled={isLoggingOut}
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    void handleLogout();
+                  }}
+                >
                   <LogOut />
-                  Sair
+                  {isLoggingOut ? "Saindo..." : "Sair"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
