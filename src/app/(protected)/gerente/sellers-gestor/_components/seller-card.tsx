@@ -33,6 +33,7 @@ interface SellerCardProps {
     clinicName: string | null;
     enterpriseCount: number;
     faturamentoInCents: number;
+    editedByName?: string | null;
   };
 }
 const SellerCard = ({ seller }: SellerCardProps) => {

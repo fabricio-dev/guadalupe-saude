@@ -61,7 +61,9 @@ const formSchema = z.object({
 
 interface UpsertSellerFormProps {
   isOpen: boolean;
-  seller?: typeof sellersTable.$inferSelect;
+  seller?: (typeof sellersTable.$inferSelect & {
+    editedByName?: string | null;
+  });
   onSuccess?: () => void;
   clinicId?: string; // ID da clínica do gestor
 }
@@ -144,6 +146,20 @@ const UpsertSellerForm = ({
             : "Adicione um novo vendedor para gerenciar as vendas dos convênios na sua unidade."}
         </DialogDescription>
       </DialogHeader>
+      {seller && (
+        <div className="rounded-md border border-sky-100 bg-sky-50/60 p-3 text-sm">
+          <p className="text-sky-900">
+            <span className="font-medium">Editado por:</span>{" "}
+            {seller.editedByName ?? seller.editedBy ?? "Nao informado"}
+          </p>
+          <p className="text-sky-900">
+            <span className="font-medium">Editado em:</span>{" "}
+            {seller.editedAt
+              ? new Date(seller.editedAt).toLocaleString("pt-BR")
+              : "Nao informado"}
+          </p>
+        </div>
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -323,7 +339,9 @@ const UpsertSellerForm = ({
             <Button
               type="submit"
               className="bg-sky-600 hover:bg-sky-700"
-              disabled={upsertSellerAction.isPending}
+              disabled={
+                upsertSellerAction.isPending || (Boolean(seller) && !form.formState.isDirty)
+              }
             >
               {upsertSellerAction.isPending
                 ? "Salvando..."
