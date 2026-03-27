@@ -50,8 +50,8 @@ export default function GenerateLinkButton({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Seja um Conveniado - Mais Saúde Lasac",
-          text: `${sellerName} te convida para ser um conveniado da Mais Saúde Lasac!`,
+          title: "Seja um Conveniado - Mais Saúde ",
+          text: `${sellerName} te convida para ser um conveniado da Mais Saúde !`,
           url: personalLink,
         });
       } catch (error) {

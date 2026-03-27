@@ -510,7 +510,7 @@ const UpsertPatientForm = ({
                   <div className="space-y-1 leading-none">
                     <FormLabel className="text-sm font-normal text-sky-900">
                       Autorização para recebimento de avisos, lembretes e
-                      comunicações sobre o meu cartão LASAC por WhatsApp.
+                      comunicações sobre o meu cartão Mais Saúde por WhatsApp.
                     </FormLabel>
                     <FormMessage />
                   </div>

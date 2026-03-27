@@ -844,7 +844,7 @@ export default function Home() {
               <div className="flex h-32 w-48 items-center justify-center rounded-lg">
                 <Image
                   src="/logo03.svg"
-                  alt="Mais Saúde Lasac Logo"
+                  alt="Mais Saúde Logo"
                   width={200}
                   height={150}
                   className="h-full w-full rounded-lg object-contain"
