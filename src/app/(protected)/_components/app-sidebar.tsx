@@ -172,7 +172,7 @@ export function AppSidebar() {
           clientBaseURL: base,
           browserOrigin: window.location.origin,
           getSessionStatus: verify.status,
-          hint: "Defina NEXT_PUBLIC_APP_URL igual a BETTER_AUTH_URL (URL canônica, sem www se o resto do site também for).",
+          hint: "No painel do servidor (Vercel etc.), defina BETTER_AUTH_URL exatamente como na barra (ex.: https://www.guadalupesaude.com.br). Na aba Rede, confira POST /api/auth/sign-out: se for 403, era origem/CSRF (trustedOrigins + env alinhados devem corrigir).",
         });
         toast.error(
           "A sessão não foi encerrada. Confira no servidor se BETTER_AUTH_URL é exatamente a URL da barra de endereço (mesmo host, com ou sem www) e veja o console [logout] para detalhes.",

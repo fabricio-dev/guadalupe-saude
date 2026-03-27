@@ -7,8 +7,36 @@ import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { usersToClinicsTable } from "@/db/schema";
 
+/** Inclui www e apex para CSRF/origin check quando usuários acessam um host e o env usa o outro. */
+function buildTrustedOrigins(): string[] {
+  const raw = process.env.BETTER_AUTH_URL?.replace(/\/$/, "");
+  const out = new Set<string>();
+  if (raw) {
+    out.add(raw);
+    try {
+      const u = new URL(raw);
+      const host = u.hostname;
+      if (host.startsWith("www.")) {
+        out.add(`${u.protocol}//${host.slice(4)}`);
+      } else if (host && host !== "localhost" && !host.startsWith("127.")) {
+        out.add(`${u.protocol}//www.${host}`);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  if (process.env.NODE_ENV === "development") {
+    out.add("http://localhost:3000");
+    out.add("http://127.0.0.1:3000");
+  }
+  return [...out];
+}
+
+const trustedOrigins = buildTrustedOrigins();
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  ...(trustedOrigins.length > 0 ? { trustedOrigins } : {}),
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
