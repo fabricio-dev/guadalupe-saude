@@ -264,7 +264,9 @@ export default function ContratoComponent({
         <div className="grid grid-cols-2 text-[10px]">
           <div className="pb-1 pl-2">
             <strong>DATA DE NASCIMENTO:</strong>{" "}
-            {patient.birthDate ? formatDate(patient.birthDate) : ""}
+            {patient.birthDate
+              ? dayjs.utc(patient.birthDate).format("DD/MM/YYYY")
+              : ""}
           </div>
           <div className="pb-1 pl-2">
             <strong>RG:</strong>{" "}
